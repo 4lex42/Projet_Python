@@ -36,6 +36,18 @@ while running:
     if keys[pygame.K_d]:
         player_pos.x += speed * dt
 
+    if player_pos.x > 1260:
+        player_pos.x = 1260
+
+    if player_pos.x < 20:
+        player_pos.x = 20
+
+    if player_pos.y > 720:
+        player_pos.y = 720
+
+    if player_pos.y < 20:
+        player_pos.y = 20
+
     # flip() the display to put your work on screen
     pygame.display.flip()
 
