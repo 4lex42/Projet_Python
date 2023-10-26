@@ -33,13 +33,13 @@ while running:
     pygame.draw.circle(screen, "red", player_pos, 30)
 
     keys = pygame.key.get_pressed()
-    if keys[pygame.K_z]:
+    if keys[pygame.K_z] or keys[pygame.K_UP]:
         player_pos.y -= speed * dt
-    if keys[pygame.K_s]:
+    if keys[pygame.K_s] or keys[pygame.K_DOWN]:
         player_pos.y += speed * dt
-    if keys[pygame.K_q]:
+    if keys[pygame.K_q] or keys[pygame.K_LEFT]:
         player_pos.x -= speed * dt
-    if keys[pygame.K_d]:
+    if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
         player_pos.x += speed * dt
 
     if player_pos.x > (bord_x - 30):
