@@ -3,9 +3,6 @@ import pygame
 
 # pygame setup
 pygame.init()
-#bord_y = 1920
-#bord = 0
-#bord_x = 1080
 screen = pygame.display.set_mode()
 bord_x = screen.get_width()
 bord_y = screen.get_height()
@@ -28,7 +25,7 @@ while running:
             running = False
 
     # fill the screen with a color to wipe away anything from last frame
-    screen.fill("black")
+    #screen.fill("black")
 
     pygame.draw.circle(screen, "red", player_pos, 30)
 
