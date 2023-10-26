@@ -3,7 +3,10 @@ import pygame
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1920, 1080))
+bord_y = 1920
+bord = 0
+bord_x = 1080
+screen = pygame.display.set_mode((bord_y, bord_x))
 icon = pygame.image.load("./assets/icon.png")
 pygame.display.set_caption("Jeu Loufoque")
 pygame.display.set_icon(icon)
@@ -36,17 +39,17 @@ while running:
     if keys[pygame.K_d]:
         player_pos.x += speed * dt
 
-    if player_pos.x > 1260:
-        player_pos.x = 1260
+    if player_pos.x > (bord_x - 40):
+        player_pos.x = (bord_x - 40)
 
-    if player_pos.x < 20:
-        player_pos.x = 20
+    if player_pos.x < (bord + 40):
+        player_pos.x = (bord + 40)
 
-    if player_pos.y > 720:
-        player_pos.y = 720
+    if player_pos.y > (bord_y - 40):
+        player_pos.y = (bord_y - 40)
 
-    if player_pos.y < 20:
-        player_pos.y = 20
+    if player_pos.y < (bord + 40):
+        player_pos.y = (bord + 40)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
