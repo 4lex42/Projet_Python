@@ -27,7 +27,7 @@ while running:
     # fill the screen with a color to wipe away anything from last frame
     screen.fill("black")
 
-    pygame.draw.circle(screen, "blue", player_pos, 30)
+    pion = pygame.draw.circle(screen, "blue", player_pos, 30, 5)
 
     keys = pygame.key.get_pressed()
     if keys[pygame.K_z] or keys[pygame.K_UP]:
