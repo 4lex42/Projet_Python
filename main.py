@@ -21,8 +21,8 @@ TAILLE_CASE = 100
 MARGE = 50
 
 # Charger les images des pions
-pion_rond = pygame.image.load("pion_rond.png")
-pion_triangle = pygame.image.load("pion_triangle.png")
+pion_rond = pygame.image.load("img/pion_rond.png")
+pion_triangle = pygame.image.load("img/pion_triangle.png")
 
 # Créer une liste pour les positions et types de pions
 pions = [
