@@ -21,19 +21,21 @@ TAILLE_CASE = 100
 MARGE = 50
 
 # Charger les images des pions
-pion_rond = pygame.image.load("img/pion_rond.png")
-pion_triangle = pygame.image.load("img/pion_triangle.png")
+tour = pygame.image.load("img/tour.png")
+tour = pygame.transform.scale(tour, (80, 80))
+pion = pygame.image.load("img/pion.png")
+pion = pygame.transform.scale(pion, (80, 80))
 
 # Créer une liste pour les positions et types de pions
 pions = [
-    {"image": pion_rond, "position": (0, i)} for i in range(8)  # Première ligne pour les pions ronds
-] + [
-    {"image": pion_rond, "position": (1, i)} for i in range(8)  # Deuxième ligne pour les pions ronds
-] + [
-    {"image": pion_triangle, "position": (6, i)} for i in range(8)  # Avant-dernière ligne pour les pions triangulaires
-] + [
-    {"image": pion_triangle, "position": (7, i)} for i in range(8)  # Dernière ligne pour les pions triangulaires
-]
+            {"image": tour, "position": (0, i)} for i in range(8)  # Première ligne pour les pions ronds
+        ] + [
+            {"image": pion, "position": (1, i)} for i in range(8)  # Deuxième ligne pour les pions ronds
+        ] + [
+            {"image": pion, "position": (6, i)} for i in range(8)  # Avant-dernière ligne pour les pions triangulaires
+        ] + [
+            {"image": tour, "position": (7, i)} for i in range(8)  # Dernière ligne pour les pions triangulaires
+        ]
 
 
 # Fonction pour dessiner le plateau
@@ -63,10 +65,12 @@ while en_cours:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
             for pion in pions:
-                rect = pion["image"].get_rect(topleft=(pion["position"][1] * TAILLE_CASE + MARGE - 50,
-                                                       pion["position"][0] * TAILLE_CASE + MARGE - 50))
-                expanded_rect = rect.inflate(100, 100)  # Augmente la zone de détection du clic
-                if expanded_rect.collidepoint(x, y):
+                center_x = pion["position"][1] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
+                center_y = pion["position"][0] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
+
+                distance = ((x - center_x) ** 2 + (y - center_y) ** 2) ** 0.5
+
+                if distance <= TAILLE_CASE / 2:
                     pion_selectionne = pion
                     break
         elif event.type == pygame.MOUSEBUTTONUP:
