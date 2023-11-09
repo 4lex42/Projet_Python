@@ -106,11 +106,9 @@ while en_cours:
                  y -= MARGE - 50
                  nouvelle_position = (y // TAILLE_CASE, x // TAILLE_CASE)
 
-                 # Check if there's already a piece at the target position
                  piece_existante = next((p for p in pions if p["position"] == nouvelle_position), None)
 
-                 if piece_existante:
-                      # Remove the existing piece
+                 if piece_existante and piece_existante !=  pion_selectionne:
                       pions.remove(piece_existante)
 
                  pion_selectionne["position"] = nouvelle_position  # Update the position
