@@ -23,20 +23,46 @@ MARGE = 50
 # Charger les images des pions
 tour = pygame.image.load("img/tour.png")
 tour = pygame.transform.scale(tour, (80, 80))
+
 pion = pygame.image.load("img/pion.png")
 pion = pygame.transform.scale(pion, (80, 80))
 
-# Créer une liste pour les positions et types de pions
-pions = [
-            {"image": tour, "position": (0, i)} for i in range(8)  # Première ligne pour les pions ronds
-        ] + [
-            {"image": pion, "position": (1, i)} for i in range(8)  # Deuxième ligne pour les pions ronds
-        ] + [
-            {"image": pion, "position": (6, i)} for i in range(8)  # Avant-dernière ligne pour les pions triangulaires
-        ] + [
-            {"image": tour, "position": (7, i)} for i in range(8)  # Dernière ligne pour les pions triangulaires
-        ]
+roi = pygame.image.load("img/roi.png")
+roi = pygame.transform.scale(roi, (80, 80))
 
+reine = pygame.image.load("img/reine.png")
+reine = pygame.transform.scale(reine, (80, 80))
+
+fou = pygame.image.load("img/fou.png")
+fou = pygame.transform.scale(fou, (80, 80))
+
+cavalier = pygame.image.load("img/cavalier.png")
+cavalier = pygame.transform.scale(cavalier, (80, 80))
+
+# Créer une liste pour les positions et types de pions
+pions = pions = [
+    {"image": roi, "position": (0, 4)},
+    {"image": reine, "position": (0, 3)},
+    {"image": fou, "position": (0, 2)},
+    {"image": fou, "position": (0, 5)},
+    {"image": cavalier, "position": (0, 1)},
+    {"image": cavalier, "position": (0, 6)},
+    {"image": tour, "position": (0, 0)},
+    {"image": tour, "position": (0, 7)}
+    ] + [
+    {"image": pion, "position": (1, i)} for i in range(8)
+] + [
+    {"image": tour, "position": (7, 0)},
+    {"image": cavalier, "position": (7, 1)},
+    {"image": fou, "position": (7, 2)},
+    {"image": reine, "position": (7, 3)},
+    {"image": roi, "position": (7, 4)},
+    {"image": fou, "position": (7, 5)},
+    {"image": cavalier, "position": (7, 6)},
+    {"image": tour, "position": (7, 7)}
+] + [
+    {"image": pion, "position": (6, i)} for i in range(8)
+]
 
 # Fonction pour dessiner le plateau
 def dessiner_plateau():
@@ -75,11 +101,20 @@ while en_cours:
                     break
         elif event.type == pygame.MOUSEBUTTONUP:
             if pion_selectionne:
-                x, y = pygame.mouse.get_pos()
-                x -= MARGE - 50
-                y -= MARGE - 50
-                pion_selectionne["position"] = (y // TAILLE_CASE, x // TAILLE_CASE)  # Inverse les coordonnées
-            pion_selectionne = None
+                 x, y = pygame.mouse.get_pos()
+                 x -= MARGE - 50
+                 y -= MARGE - 50
+                 nouvelle_position = (y // TAILLE_CASE, x // TAILLE_CASE)
+
+                 # Check if there's already a piece at the target position
+                 piece_existante = next((p for p in pions if p["position"] == nouvelle_position), None)
+
+                 if piece_existante:
+                      # Remove the existing piece
+                      pions.remove(piece_existante)
+
+                 pion_selectionne["position"] = nouvelle_position  # Update the position
+                 pion_selectionne = None
 
     # Effacer l'écran
     fenetre.fill(BLANC)
