@@ -21,22 +21,22 @@ TAILLE_CASE = 100
 MARGE = 50
 
 # Charger les images des pions
-tour = pygame.image.load("img/tour.png")
+tour = pygame.image.load("assets/tour.png")
 tour = pygame.transform.scale(tour, (80, 80))
 
-pion = pygame.image.load("img/pion.png")
+pion = pygame.image.load("assets/pion.png")
 pion = pygame.transform.scale(pion, (80, 80))
 
-roi = pygame.image.load("img/roi.png")
+roi = pygame.image.load("assets/roi.png")
 roi = pygame.transform.scale(roi, (80, 80))
 
-reine = pygame.image.load("img/reine.png")
+reine = pygame.image.load("assets/reine.png")
 reine = pygame.transform.scale(reine, (80, 80))
 
-fou = pygame.image.load("img/fou.png")
+fou = pygame.image.load("assets/fou.png")
 fou = pygame.transform.scale(fou, (80, 80))
 
-cavalier = pygame.image.load("img/cavalier.png")
+cavalier = pygame.image.load("assets/cavalier.png")
 cavalier = pygame.transform.scale(cavalier, (80, 80))
 
 # Créer une liste pour les positions et types de pions
