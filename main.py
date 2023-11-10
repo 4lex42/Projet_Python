@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 # Initialisation de Pygame
 pygame.init()
@@ -57,8 +58,8 @@ pions = [
             {"image": tour, "position": (7, 0), "joueur": 2},
             {"image": cavalier, "position": (7, 1), "joueur": 2},
             {"image": fou, "position": (7, 2), "joueur": 2},
-            {"image": reine, "position": (7, 3), "joueur": 2},
-            {"image": roi, "position": (7, 4), "joueur": 2},
+            {"image": reine, "position": (7, 4), "joueur": 2},
+            {"image": roi, "position": (7, 3), "joueur": 2},
             {"image": fou, "position": (7, 5), "joueur": 2},
             {"image": cavalier, "position": (7, 6), "joueur": 2},
             {"image": tour, "position": (7, 7), "joueur": 2}
@@ -66,6 +67,27 @@ pions = [
             {"image": pion, "position": (6, i), "joueur": 2} for i in range(8)
         ]
 
+
+def display_winner(joueur):
+    pygame.quit()
+    pygame.init()
+
+    # Create a new smaller window
+    victory_screen = pygame.display.set_mode((400, 200))
+    pygame.display.set_caption("Victoire!")
+
+    font_winner = pygame.font.Font(None, 36)
+    text_winner = font_winner.render(f"Le joueur {joueur} a gagné!", True, (0, 0, 0))
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+        victory_screen.fill((255, 255, 255))
+        victory_screen.blit(text_winner, (50, 80))
+        pygame.display.flip()
 
 # Position dans le plateau
 def is_outside(pos):
@@ -109,7 +131,7 @@ def deplacer_piece():
 
 # Boucle principale du jeu
 en_cours = True
-joueur_actuel = 1  # Initialisez à 1 pour le premier joueur
+joueur_actuel = random.choice([1, 2])
 pion_selectionne = None
 
 clock = pygame.time.Clock()  # Ajoutez une horloge pour contrôler le taux de rafraîchissement
@@ -138,6 +160,11 @@ while en_cours:
 
                 if deplacement_reussi:
                     joueur_actuel = 3 - joueur_actuel
+
+                    # Regarde si il reste des pièces
+                    king_exists = any(p["joueur"] == joueur_actuel and p["image"] == roi for p in pions)
+                    if not king_exists:
+                        display_winner(3 - joueur_actuel)
 
     # Effacer l'écran
     fenetre.fill(BLANC)
