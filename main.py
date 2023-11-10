@@ -7,8 +7,11 @@ icon = pygame.image.load("./assets/icon.png")
 pygame.display.set_caption("Jeu Loufoque")
 pygame.display.set_icon(icon)
 
+pygame.font.init()
+font = pygame.font.Font(None, 36)  # Vous pouvez ajuster la taille de la police selon vos besoins
+
 # Définir les dimensions de la fenêtre
-largeur, hauteur = 800, 800
+largeur, hauteur = 905, 800
 fenetre = pygame.display.set_mode((largeur, hauteur))
 
 # Définir les couleurs
@@ -40,32 +43,34 @@ cavalier = pygame.transform.scale(cavalier, (80, 80))
 
 # Créer une liste pour les positions et types de pions
 pions = [
-    {"image": roi, "position": (0, 4), "joueur": 1},
-    {"image": reine, "position": (0, 3), "joueur": 1},
-    {"image": fou, "position": (0, 2), "joueur": 1},
-    {"image": fou, "position": (0, 5), "joueur": 1},
-    {"image": cavalier, "position": (0, 1), "joueur": 1},
-    {"image": cavalier, "position": (0, 6), "joueur": 1},
-    {"image": tour, "position": (0, 0), "joueur": 1},
-    {"image": tour, "position": (0, 7), "joueur": 1}
-] + [
-    {"image": pion, "position": (1, i), "joueur": 1} for i in range(8)
-] + [
-    {"image": tour, "position": (7, 0), "joueur": 2},
-    {"image": cavalier, "position": (7, 1), "joueur": 2},
-    {"image": fou, "position": (7, 2), "joueur": 2},
-    {"image": reine, "position": (7, 3), "joueur": 2},
-    {"image": roi, "position": (7, 4), "joueur": 2},
-    {"image": fou, "position": (7, 5), "joueur": 2},
-    {"image": cavalier, "position": (7, 6), "joueur": 2},
-    {"image": tour, "position": (7, 7), "joueur": 2}
-] + [
-    {"image": pion, "position": (6, i), "joueur": 2} for i in range(8)
-]
+            {"image": roi, "position": (0, 4), "joueur": 1},
+            {"image": reine, "position": (0, 3), "joueur": 1},
+            {"image": fou, "position": (0, 2), "joueur": 1},
+            {"image": fou, "position": (0, 5), "joueur": 1},
+            {"image": cavalier, "position": (0, 1), "joueur": 1},
+            {"image": cavalier, "position": (0, 6), "joueur": 1},
+            {"image": tour, "position": (0, 0), "joueur": 1},
+            {"image": tour, "position": (0, 7), "joueur": 1}
+        ] + [
+            {"image": pion, "position": (1, i), "joueur": 1} for i in range(8)
+        ] + [
+            {"image": tour, "position": (7, 0), "joueur": 2},
+            {"image": cavalier, "position": (7, 1), "joueur": 2},
+            {"image": fou, "position": (7, 2), "joueur": 2},
+            {"image": reine, "position": (7, 3), "joueur": 2},
+            {"image": roi, "position": (7, 4), "joueur": 2},
+            {"image": fou, "position": (7, 5), "joueur": 2},
+            {"image": cavalier, "position": (7, 6), "joueur": 2},
+            {"image": tour, "position": (7, 7), "joueur": 2}
+        ] + [
+            {"image": pion, "position": (6, i), "joueur": 2} for i in range(8)
+        ]
+
 
 # Position dans le plateau
 def is_outside(pos):
     return all(0 <= coord < 8 for coord in pos)
+
 
 # Fonction pour dessiner le plateau
 def dessiner_plateau():
@@ -74,12 +79,14 @@ def dessiner_plateau():
             couleur = BLANC if (i + j) % 2 == 0 else NOIR
             pygame.draw.rect(fenetre, couleur, (j * TAILLE_CASE, i * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE))
 
+
 # Fonction pour dessiner les pions
 def dessiner_pions():
     for pion in pions:
         x = pion["position"][1] * TAILLE_CASE + MARGE - 50 + (TAILLE_CASE - pion["image"].get_width()) // 2
         y = pion["position"][0] * TAILLE_CASE + MARGE - 50 + (TAILLE_CASE - pion["image"].get_height()) // 2
         fenetre.blit(pion["image"], (x, y))
+
 
 # Fonction pour gérer le déplacement d'une pièce
 def deplacer_piece():
@@ -89,17 +96,15 @@ def deplacer_piece():
     y -= MARGE - 50
     nouvelle_position = (y // TAILLE_CASE, x // TAILLE_CASE)
 
-    if is_outside(nouvelle_position):
+    if is_outside(nouvelle_position) and pion_selectionne["position"] != nouvelle_position:
         piece_existante = next((p for p in pions if p["position"] == nouvelle_position), None)
         if piece_existante and piece_existante != pion_selectionne:
             pions.remove(piece_existante)
 
         pion_selectionne["position"] = nouvelle_position  # Update the position
-
         return True  # Indique un déplacement réussi
 
     return False  # Indique un déplacement échoué
-
 
 
 # Boucle principale du jeu
@@ -110,13 +115,13 @@ pion_selectionne = None
 clock = pygame.time.Clock()  # Ajoutez une horloge pour contrôler le taux de rafraîchissement
 
 while en_cours:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             en_cours = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Vérifiez que le clic gauche est utilisé
+            if event.button == 1:
                 for pion in pions:
-                    # Ajoutez une vérification pour s'assurer que le joueur sélectionne sa propre pièce
                     if pion["joueur"] == joueur_actuel:
                         center_x = pion["position"][1] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
                         center_y = pion["position"][0] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
@@ -127,13 +132,12 @@ while en_cours:
                             pion_selectionne = pion
                             break
         elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1 and pion_selectionne:  # Vérifiez le bouton de la souris
+            if event.button == 1 and pion_selectionne:
                 deplacement_reussi = deplacer_piece()
+                pion_selectionne = None  # Réinitialisez la sélection à chaque itération de la boucle principale
 
                 if deplacement_reussi:
-                    # Si le déplacement a réussi, changez de joueur
-                    joueur_actuel = 3 - joueur_actuel  # Alterner entre les joueurs 1 et 2
-                pion_selectionne = None  # Réinitialisez la pièce sélectionnée après le déplacement
+                    joueur_actuel = 3 - joueur_actuel
 
     # Effacer l'écran
     fenetre.fill(BLANC)
@@ -142,12 +146,23 @@ while en_cours:
     dessiner_plateau()
     dessiner_pions()
 
+    tour = font.render("Tour : ", True, (0, 0, 0))
+    fenetre.blit(tour, (800, 370))
+
+    # Dessiner le numéro du joueur actuel en dehors du plateau
+    texte_joueur = font.render(f"Joueur {joueur_actuel}", True, (0, 0, 0))
+    fenetre.blit(texte_joueur, (800, 400))  # Ajustez ces coordonnées selon l'emplacement souhaité
+
+    joueur1 = font.render(f"Joueur 1", True, (0, 0, 0))
+    fenetre.blit(joueur1, (800, 100))  # Ajustez ces coordonnées selon l'emplacement souhaité
+
+    joueur2 = font.render(f"Joueur 2", True, (0, 0, 0))
+    fenetre.blit(joueur2, (800, 700))  # Ajustez ces coordonnées selon l'emplacement souhaité
+
     # Mettre à jour l'affichage
     pygame.display.flip()
 
-    # Contrôler le taux de rafraîchissement
-    clock.tick(30)  # 30 images par seconde (ajustez selon vos besoins)
+    clock.tick(30)
 
-# Quitter Pygame
 pygame.quit()
 sys.exit()
