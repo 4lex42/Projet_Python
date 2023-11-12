@@ -1,195 +1,218 @@
 import pygame
 import sys
-import random
 
-# Initialisation de Pygame
-pygame.init()
-icon = pygame.image.load("./assets/icon.png")
-pygame.display.set_caption("Jeu Loufoque")
-pygame.display.set_icon(icon)
-
-pygame.font.init()
-font = pygame.font.Font(None, 36)  # Vous pouvez ajuster la taille de la police selon vos besoins
-
-# Définir les dimensions de la fenêtre
-largeur, hauteur = 905, 800
+largeur, hauteur = 800, 800
 fenetre = pygame.display.set_mode((largeur, hauteur))
-
-# Définir les couleurs
-BLANC = (255, 255, 255)
-NOIR = (0, 0, 0)
-
-# Définir la taille de la case et la marge
 TAILLE_CASE = 100
 MARGE = 50
 
-# Charger les images des pions
-tour = pygame.image.load("assets/tour.png")
-tour = pygame.transform.scale(tour, (80, 80))
-
-pion = pygame.image.load("assets/pion.png")
-pion = pygame.transform.scale(pion, (80, 80))
-
-roi = pygame.image.load("assets/roi.png")
-roi = pygame.transform.scale(roi, (80, 80))
-
-reine = pygame.image.load("assets/reine.png")
-reine = pygame.transform.scale(reine, (80, 80))
-
-fou = pygame.image.load("assets/fou.png")
-fou = pygame.transform.scale(fou, (80, 80))
-
-cavalier = pygame.image.load("assets/cavalier.png")
-cavalier = pygame.transform.scale(cavalier, (80, 80))
-
-# Créer une liste pour les positions et types de pions
-pions = [
-            {"image": roi, "position": (0, 4), "joueur": 1},
-            {"image": reine, "position": (0, 3), "joueur": 1},
-            {"image": fou, "position": (0, 2), "joueur": 1},
-            {"image": fou, "position": (0, 5), "joueur": 1},
-            {"image": cavalier, "position": (0, 1), "joueur": 1},
-            {"image": cavalier, "position": (0, 6), "joueur": 1},
-            {"image": tour, "position": (0, 0), "joueur": 1},
-            {"image": tour, "position": (0, 7), "joueur": 1}
-        ] + [
-            {"image": pion, "position": (1, i), "joueur": 1} for i in range(8)
-        ] + [
-            {"image": tour, "position": (7, 0), "joueur": 2},
-            {"image": cavalier, "position": (7, 1), "joueur": 2},
-            {"image": fou, "position": (7, 2), "joueur": 2},
-            {"image": reine, "position": (7, 4), "joueur": 2},
-            {"image": roi, "position": (7, 3), "joueur": 2},
-            {"image": fou, "position": (7, 5), "joueur": 2},
-            {"image": cavalier, "position": (7, 6), "joueur": 2},
-            {"image": tour, "position": (7, 7), "joueur": 2}
-        ] + [
-            {"image": pion, "position": (6, i), "joueur": 2} for i in range(8)
-        ]
+BLANC = (255, 255, 255)
+NOIR = (0, 0, 0)
+ROSE = (237, 170, 200)
 
 
-def display_winner(joueur):
-    pygame.quit()
-    pygame.init()
+class ChessPiece:
+    def __init__(self, image, position):
+        self.image = image
+        self.position = position
 
-    # Create a new smaller window
-    victory_screen = pygame.display.set_mode((400, 200))
-    pygame.display.set_caption("Victoire!")
 
-    font_winner = pygame.font.Font(None, 36)
-    text_winner = font_winner.render(f"Le joueur {joueur} a gagné!", True, (0, 0, 0))
+class ChessBoard:
+    def __init__(self, width, height, taille_case, marge):
+        self.width = width
+        self.height = height
+        self.taille_case = taille_case
+        self.marge = marge
+        self.pieces = []
+        self.creer_pieces()
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+    def creer_pieces(self):
+        # creer des listes des positions et des listes des images pour les joueurs A et B
+        pieces_positions_A = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)]
+        pieces_images_A = [tour_image, cavalier_image, fou_image, reine_image, roi_image, fou_image, cavalier_image,
+                           tour_image]
+        pieces_positions_B = [(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7)]
+        pieces_images_B = [tour_image, cavalier_image, fou_image, reine_image, roi_image, fou_image, cavalier_image,
+                           tour_image]
 
-        victory_screen.fill((255, 255, 255))
-        victory_screen.blit(text_winner, (50, 80))
+        # Placer les 8 pieces des joueurs A et B
+        for i in range(8):
+            piece_A = ChessPiece(pieces_images_A[i], pieces_positions_A[i])
+            self.ajouter_pion(piece_A)
+            piece_B = ChessPiece(pieces_images_B[i], pieces_positions_B[i])
+            self.ajouter_pion(piece_B)
+        # Placer les pions des joueurs A et B
+        for i in range(8):
+            pion_A = ChessPiece(pion_image, (1, i))
+            self.ajouter_pion(pion_A)
+            pion_B = ChessPiece(pion_image, (6, i))
+            self.ajouter_pion(pion_B)
+
+    def ajouter_pion(self, piece):
+        self.pieces.append(piece)
+
+    def dessiner_plateau(self):
+        for i in range(8):
+            for j in range(8):
+                couleur = BLANC if (i + j) % 2 == 0 else ROSE
+                pygame.draw.rect(fenetre, couleur, (j * TAILLE_CASE, i * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE))
+
+    def dessiner_pions(self):
+        for piece in self.pieces:
+            x = piece.position[1] * TAILLE_CASE + MARGE - 50 + (TAILLE_CASE - piece.image.get_width()) // 2
+            y = piece.position[0] * TAILLE_CASE + MARGE - 50 + (TAILLE_CASE - piece.image.get_height()) // 2
+            fenetre.blit(piece.image, (x, y))
+
+
+class ChessGame:
+    def __init__(self):
+        self.largeur, self.hauteur = 800, 800
+        self.fenetre = pygame.display.set_mode((self.largeur, self.hauteur))
+        self.board = ChessBoard(self.largeur, self.hauteur, TAILLE_CASE, MARGE)
+
+    def run(self):
+
+        # Dessiner l'echiquier des le lancement
+        self.fenetre.fill(BLANC)
+        self.board.dessiner_plateau()
+        self.board.dessiner_pions()  # Appel pour dessiner les pièces
         pygame.display.flip()
 
-# Position dans le plateau
-def is_outside(pos):
-    return all(0 <= coord < 8 for coord in pos)
+        en_cours = True
+        pion_selectionne = None  # stocker la piece selectionnee
+
+        jouabilite = 0
+        while jouabilite != "2" and jouabilite != "1":
+            jouabilite = input("Choisissez votre mode de jouabilité, tapez le numéro 1 (Souris) ou 2 (Terminal) :")
+
+        if jouabilite == "1":
+            jouabilite = "souris"
+        elif jouabilite == "2":
+            jouabilite = "terminal"
+        if jouabilite == "souris":
+            while en_cours:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        en_cours = False
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        x, y = pygame.mouse.get_pos()
+                        for piece in self.board.pieces:
+                            center_x = piece.position[1] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
+                            center_y = piece.position[0] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
+
+                            distance = ((x - center_x) ** 2 + (y - center_y) ** 2) ** 0.5
+
+                            if distance <= TAILLE_CASE / 2:
+                                pion_selectionne = piece
+                                break
+                    elif event.type == pygame.MOUSEBUTTONUP:
+                        if pion_selectionne:
+                            x, y = pygame.mouse.get_pos()
+                            x -= MARGE - 50
+                            y -= MARGE - 50
+                            nouvelle_position = (y // TAILLE_CASE, x // TAILLE_CASE)
+
+                            # Vérifie s'il y a déjà une pièce à la nouvelle position
+                            for piece in self.board.pieces:
+                                if piece.position == nouvelle_position:
+                                    self.board.pieces.remove(piece)  # Supprime la pièce existante
+
+                            pion_selectionne.position = nouvelle_position  # Mise à jour de la position
+                            pion_selectionne = None  # Réinitialisation de la pièce sélectionnée
+
+                # Effacer l'écran
+                self.fenetre.fill(BLANC)
+                self.board.dessiner_plateau()
+                self.board.dessiner_pions()  # Appel pour dessiner les pièces
+                pygame.display.flip()
+
+        elif jouabilite == "terminal":
+            while en_cours:
+                # Demande à l'utilisateur de fournir la position de la pièce à déplacer
+                user_input = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")
+
+                # Convertit la saisie de l'utilisateur en une paire de coordonnées (ligne, colonne)
+                coordonnees = user_input.split()  # Sépare la saisie en une liste de valeurs
+                ligne = int(coordonnees[0])  # Prend la première valeur comme numéro de ligne
+                colonne = int(coordonnees[1])  # Prend la deuxième valeur comme numéro de colonne
+                position = (ligne, colonne)  # Crée un tuple avec les coordonnées (ligne, colonne)
+
+                # Recherche de la pièce à la position spécifiée dans la liste des pièces sur l'échiquier
+                selected_piece = None
+                for piece in self.board.pieces:
+                    if piece.position == position:  # Vérifie si la position de la pièce correspond à la saisie de l'utilisateur
+                        selected_piece = piece  # Si la pièce est trouvée, elle est assignée à selected_piece
+                        break  # Arrête la recherche dès qu'une pièce est trouvée
+
+                if selected_piece:  # Vérifie si une pièce a été trouvée à la position spécifiée
+                    # Demande à l'utilisateur de fournir la nouvelle position pour déplacer la pièce
+                    new_position_input = input("Entrez la nouvelle position (ligne colonne) : ")
+
+                    # Convertit la nouvelle saisie de l'utilisateur en une paire de coordonnées (ligne, colonne)
+                    new_coordonnees = new_position_input.split()  # Sépare la nouvelle saisie en une liste de valeurs
+                    new_ligne = int(new_coordonnees[0])  # Prend la première valeur comme nouveau numéro de ligne
+                    new_colonne = int(new_coordonnees[1])  # Prend la deuxième valeur comme nouveau numéro de colonne
+                    new_position = (
+                    new_ligne, new_colonne)  # Crée un tuple avec les nouvelles coordonnées (ligne, colonne)
+
+                    if selected_piece:
+                        for piece in self.board.pieces:
+                            if piece.position == new_position:
+                                self.board.pieces.remove(piece)
+                                break
+
+                    # Met à jour la position de la pièce sélectionnée avec la nouvelle position fournie par l'utilisateur
+                    selected_piece.position = new_position
+
+                # Effacer l'écran et rafraichissement
+                self.fenetre.fill(BLANC)
+                self.board.dessiner_plateau()
+                self.board.dessiner_pions()  # Appel pour dessiner les pièces
+                pygame.display.flip()
+
+            """command = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")
+            position = tuple(map(int, command.split()))  # Convertit la saisie en coordonnées (ligne, colonne)
+
+            # Recherche de la pièce à la position spécifiée
+            selected_piece = None
+            for piece in self.board.pieces:
+                if piece.position == position:
+                    selected_piece = piece
+                    break
+
+            if selected_piece:
+                new_position = input("Entrez la nouvelle position (ligne colonne) : ")
+                new_position = tuple(map(int, new_position.split()))  # Nouvelle position de la pièce
+                selected_piece.position = new_position  # Met à jour la position de la pièce"""
+
+        pygame.quit()
+        sys.exit()
 
 
-# Fonction pour dessiner le plateau
-def dessiner_plateau():
-    for i in range(8):
-        for j in range(8):
-            couleur = BLANC if (i + j) % 2 == 0 else NOIR
-            pygame.draw.rect(fenetre, couleur, (j * TAILLE_CASE, i * TAILLE_CASE, TAILLE_CASE, TAILLE_CASE))
+if __name__ == "__main__":
+    pygame.init()
+    icon = pygame.image.load("./assets/icon.png")
+    pygame.display.set_caption("Jeu Loufoque")
+    pygame.display.set_icon(icon)
 
+    # Charger l'image du pion
+    pion_image = pygame.image.load("assets/pion.png")
+    pion_image = pygame.transform.scale(pion_image, (80, 80))
 
-# Fonction pour dessiner les pions
-def dessiner_pions():
-    for pion in pions:
-        x = pion["position"][1] * TAILLE_CASE + MARGE - 50 + (TAILLE_CASE - pion["image"].get_width()) // 2
-        y = pion["position"][0] * TAILLE_CASE + MARGE - 50 + (TAILLE_CASE - pion["image"].get_height()) // 2
-        fenetre.blit(pion["image"], (x, y))
+    roi_image = pygame.image.load("assets/roi.png")
+    roi_image = pygame.transform.scale(roi_image, (80, 80))
 
+    reine_image = pygame.image.load("assets/reine.png")
+    reine_image = pygame.transform.scale(reine_image, (80, 80))
 
-# Fonction pour gérer le déplacement d'une pièce
-def deplacer_piece():
-    global pion_selectionne, joueur_actuel
-    x, y = pygame.mouse.get_pos()
-    x -= MARGE - 50
-    y -= MARGE - 50
-    nouvelle_position = (y // TAILLE_CASE, x // TAILLE_CASE)
+    tour_image = pygame.image.load("assets/tour.png")
+    tour_image = pygame.transform.scale(tour_image, (80, 80))
 
-    if is_outside(nouvelle_position) and pion_selectionne["position"] != nouvelle_position:
-        piece_existante = next((p for p in pions if p["position"] == nouvelle_position), None)
-        if piece_existante and piece_existante != pion_selectionne:
-            pions.remove(piece_existante)
+    fou_image = pygame.image.load("assets/fou.png")
+    fou_image = pygame.transform.scale(fou_image, (80, 80))
 
-        pion_selectionne["position"] = nouvelle_position  # Update the position
-        return True  # Indique un déplacement réussi
+    cavalier_image = pygame.image.load("assets/cavalier.png")
+    cavalier_image = pygame.transform.scale(cavalier_image, (80, 80))
 
-    return False  # Indique un déplacement échoué
-
-
-# Boucle principale du jeu
-en_cours = True
-joueur_actuel = random.choice([1, 2])
-pion_selectionne = None
-
-clock = pygame.time.Clock()  # Ajoutez une horloge pour contrôler le taux de rafraîchissement
-
-while en_cours:
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            en_cours = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:
-                for pion in pions:
-                    if pion["joueur"] == joueur_actuel:
-                        center_x = pion["position"][1] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
-                        center_y = pion["position"][0] * TAILLE_CASE + MARGE - 50 + TAILLE_CASE / 2
-
-                        distance = ((event.pos[0] - center_x) ** 2 + (event.pos[1] - center_y) ** 2) ** 0.5
-
-                        if distance <= TAILLE_CASE / 2:
-                            pion_selectionne = pion
-                            break
-        elif event.type == pygame.MOUSEBUTTONUP:
-            if event.button == 1 and pion_selectionne:
-                deplacement_reussi = deplacer_piece()
-                pion_selectionne = None  # Réinitialisez la sélection à chaque itération de la boucle principale
-
-                if deplacement_reussi:
-                    joueur_actuel = 3 - joueur_actuel
-
-                    # Regarde si il reste des pièces
-                    king_exists = any(p["joueur"] == joueur_actuel and p["image"] == roi for p in pions)
-                    if not king_exists:
-                        display_winner(3 - joueur_actuel)
-
-    # Effacer l'écran
-    fenetre.fill(BLANC)
-
-    # Dessiner le plateau et les pions
-    dessiner_plateau()
-    dessiner_pions()
-
-    tour = font.render("Tour : ", True, (0, 0, 0))
-    fenetre.blit(tour, (800, 370))
-
-    # Dessiner le numéro du joueur actuel en dehors du plateau
-    texte_joueur = font.render(f"Joueur {joueur_actuel}", True, (0, 0, 0))
-    fenetre.blit(texte_joueur, (800, 400))  # Ajustez ces coordonnées selon l'emplacement souhaité
-
-    joueur1 = font.render(f"Joueur 1", True, (0, 0, 0))
-    fenetre.blit(joueur1, (800, 100))  # Ajustez ces coordonnées selon l'emplacement souhaité
-
-    joueur2 = font.render(f"Joueur 2", True, (0, 0, 0))
-    fenetre.blit(joueur2, (800, 700))  # Ajustez ces coordonnées selon l'emplacement souhaité
-
-    # Mettre à jour l'affichage
-    pygame.display.flip()
-
-    clock.tick(30)
-
-pygame.quit()
-sys.exit()
+    game = ChessGame()
+    game.run()
