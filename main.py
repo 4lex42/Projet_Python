@@ -1,3 +1,4 @@
+# main.py
 import pygame
 import sys
 
@@ -16,6 +17,102 @@ class ChessPiece:
         self.image = image
         self.position = position
 
+    def click_inside_piece(self, x, y):
+        x_piece = self.position[1] * TAILLE_CASE + MARGE - 50
+        y_piece = self.position[0] * TAILLE_CASE + MARGE - 50
+        return x_piece <= x <= x_piece + TAILLE_CASE and y_piece <= y <= y_piece + TAILLE_CASE
+
+    def move(self, new_position):
+        # Generic move logic
+        self.position = new_position
+
+
+class Pawn(ChessPiece):
+    def __init__(self, image, position):
+        super().__init__(image, position)
+
+    def move(self, new_position):
+        start_row, start_col = self.position
+        row, col = new_position
+
+        # Check if the move is allowed for a pawn
+        if (row == start_row + 1) and (col == start_col):
+            super().move(new_position)
+        else:
+            print("Invalid pawn move")
+
+
+class Rook(ChessPiece):
+    def __init__(self, image, position):
+        super().__init__(image, position)
+
+    def move(self, new_position):
+        start_row, start_col = self.position
+        row, col = new_position
+
+        # Check if the move is allowed for a rook (horizontal or vertical movement)
+        if (row == start_row or col == start_col):
+            super().move(new_position)
+        else:
+            print("Invalid rook move")
+
+class Knight(ChessPiece):
+    def __init__(self, image, position):
+        super().__init__(image, position)
+
+    def move(self, new_position):
+        start_row, start_col = self.position
+        row, col = new_position
+
+        # Check if the move is allowed for a knight (L-shaped movement)
+        if ((abs(row - start_row) == 2 and abs(col - start_col) == 1) or
+            (abs(row - start_row) == 1 and abs(col - start_col) == 2)):
+            super().move(new_position)
+        else:
+            print("Invalid knight move")
+
+class Bishop(ChessPiece):
+    def __init__(self, image, position):
+        super().__init__(image, position)
+
+    def move(self, new_position):
+        start_row, start_col = self.position
+        row, col = new_position
+
+        # Check if the move is allowed for a bishop (diagonal movement)
+        if abs(row - start_row) == abs(col - start_col):
+            super().move(new_position)
+        else:
+            print("Invalid bishop move")
+
+class King(ChessPiece):
+    def __init__(self, image, position):
+        super().__init__(image, position)
+
+    def move(self, new_position):
+        start_row, start_col = self.position
+        row, col = new_position
+
+        # Check if the move is allowed for a king (one square movement in any direction)
+        if abs(row - start_row) <= 1 and abs(col - start_col) <= 1:
+            super().move(new_position)
+        else:
+            print("Invalid king move")
+
+class Queen(ChessPiece):
+    def __init__(self, image, position):
+        super().__init__(image, position)
+
+    def move(self, new_position):
+        start_row, start_col = self.position
+        row, col = new_position
+
+        # Check if the move is allowed for a queen (horizontal, vertical, or diagonal movement)
+        if (row == start_row or col == start_col or
+            abs(row - start_row) == abs(col - start_col)):
+            super().move(new_position)
+        else:
+            print("Invalid queen move")
 
 class ChessBoard:
     def __init__(self, width, height, taille_case, marge):
@@ -153,7 +250,7 @@ class ChessGame:
                     new_ligne = int(new_coordonnees[0])  # Prend la première valeur comme nouveau numéro de ligne
                     new_colonne = int(new_coordonnees[1])  # Prend la deuxième valeur comme nouveau numéro de colonne
                     new_position = (
-                    new_ligne, new_colonne)  # Crée un tuple avec les nouvelles coordonnées (ligne, colonne)
+                        new_ligne, new_colonne)  # Crée un tuple avec les nouvelles coordonnées (ligne, colonne)
 
                     if selected_piece:
                         for piece in self.board.pieces:
