@@ -1,7 +1,7 @@
 # chess_board.py
 import pygame
 
-from chess_pieces import ChessPiece
+from chess_pieces import ChessPiece, Rook, Knight, Bishop, Queen, King, Pawn
 from constants import WHITE, PINK, TILE_SIZE, MARGIN
 
 
@@ -32,25 +32,36 @@ class ChessBoard:
         cavalier_image = pygame.transform.scale(cavalier_image, (80, 80))
 
         # creer des listes des positions et des listes des images pour les joueurs A et B
-        pieces_positions_A = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)]
-        pieces_images_A = [tour_image, cavalier_image, fou_image, reine_image, roi_image, fou_image, cavalier_image,
-                           tour_image]
-        pieces_positions_B = [(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7)]
-        pieces_images_B = [tour_image, cavalier_image, fou_image, reine_image, roi_image, fou_image, cavalier_image,
-                           tour_image]
+        pieces_positions_a = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)]
+        pieces_positions_b = [(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7)]
+
+        def get_special_pieces_list(positions, color):
+            return [Rook(tour_image, positions[0], color),
+                    Knight(cavalier_image, positions[1], color),
+                    Bishop(fou_image, positions[2], color),
+                    Queen(reine_image, positions[3], color),
+                    King(roi_image, positions[4], color),
+                    Bishop(fou_image, positions[5], color),
+                    Knight(cavalier_image, positions[6], color),
+                    Rook(tour_image, positions[7], color)]
+
+        pieces_a = get_special_pieces_list(pieces_positions_a, "A")
+        pieces_b = get_special_pieces_list(pieces_positions_b, "B")
 
         # Placer les 8 pieces des joueurs A et B
-        for i in range(8):
-            piece_A = ChessPiece(pieces_images_A[i], pieces_positions_A[i])
-            self.ajouter_pion(piece_A)
-            piece_B = ChessPiece(pieces_images_B[i], pieces_positions_B[i])
-            self.ajouter_pion(piece_B)
+        for piece_a in pieces_a:
+            self.ajouter_pion(piece_a)
+
+        for piece_b in pieces_b:
+            self.ajouter_pion(piece_b)
+
         # Placer les pions des joueurs A et B
         for i in range(8):
-            pion_A = ChessPiece(pion_image, (1, i))
-            self.ajouter_pion(pion_A)
-            pion_B = ChessPiece(pion_image, (6, i))
-            self.ajouter_pion(pion_B)
+            pion_a = Pawn(pion_image, (1, i), "A")
+            self.ajouter_pion(pion_a)
+
+            pion_b = Pawn(pion_image, (6, i), "B")
+            self.ajouter_pion(pion_b)
 
     def ajouter_pion(self, piece):
         self.pieces.append(piece)
@@ -66,3 +77,6 @@ class ChessBoard:
             x = piece.position[1] * TILE_SIZE + MARGIN - 50 + (TILE_SIZE - piece.image.get_width()) // 2
             y = piece.position[0] * TILE_SIZE + MARGIN - 50 + (TILE_SIZE - piece.image.get_height()) // 2
             self.window.blit(piece.image, (x, y))
+
+    def get_all_pieces(self):
+        return self.pieces

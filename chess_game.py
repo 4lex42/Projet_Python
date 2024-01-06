@@ -26,11 +26,7 @@ class ChessGame:
         while jouabilite != "2" and jouabilite != "1":
             jouabilite = input("Choisissez votre mode de jouabilité, tapez le numéro 1 (Souris) ou 2 (Terminal) :")
 
-        if jouabilite == "1":
-            jouabilite = "souris"
-        elif jouabilite == "2":
-            jouabilite = "terminal"
-        if jouabilite == "souris":
+        if jouabilite == "1":  # souris
             while en_cours:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -38,12 +34,7 @@ class ChessGame:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = pygame.mouse.get_pos()
                         for piece in self.board.pieces:
-                            center_x = piece.position[1] * TILE_SIZE + MARGIN - 50 + TILE_SIZE / 2
-                            center_y = piece.position[0] * TILE_SIZE + MARGIN - 50 + TILE_SIZE / 2
-
-                            distance = ((x - center_x) ** 2 + (y - center_y) ** 2) ** 0.5
-
-                            if distance <= TILE_SIZE / 2:
+                            if piece.click_inside_piece(x, y):
                                 pion_selectionne = piece
                                 break
                     elif event.type == pygame.MOUSEBUTTONUP:
@@ -53,13 +44,10 @@ class ChessGame:
                             y -= MARGIN - 50
                             nouvelle_position = (y // TILE_SIZE, x // TILE_SIZE)
 
-                            # Vérifie s'il y a déjà une pièce à la nouvelle position
-                            for piece in self.board.pieces:
-                                if piece.position == nouvelle_position:
-                                    self.board.pieces.remove(piece)  # Supprime la pièce existante
+                            # Move the piece if the move is valid
+                            pion_selectionne.move(nouvelle_position, self.board)
 
-                            pion_selectionne.position = nouvelle_position  # Mise à jour de la position
-                            pion_selectionne = None  # Réinitialisation de la pièce sélectionnée
+                            pion_selectionne = None
 
                 # Effacer l'écran
                 self.window.fill(WHITE)
@@ -67,7 +55,7 @@ class ChessGame:
                 self.board.dessiner_pions()  # Appel pour dessiner les pièces
                 pygame.display.flip()
 
-        elif jouabilite == "terminal":
+        elif jouabilite == "2":   # CLI
             while en_cours:
                 # Demande à l'utilisateur de fournir la position de la pièce à déplacer
                 user_input = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")
