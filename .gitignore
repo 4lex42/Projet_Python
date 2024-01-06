@@ -1,0 +1,27 @@
+# PyCharm
+.idea/
+
+# Compiled Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+
+# Logs and databases
+*.log
+*.sqlite3
+
+# Temporary files
+*.bak
+*.swp
+
+# Environment variables file
+.env
+
+# User-specific files
+.DS_Store
+Thumbs.db

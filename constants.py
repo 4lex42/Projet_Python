@@ -1,6 +1,4 @@
 # constants.py
-import pygame
-
 WIDTH, HEIGHT = 800, 800
 TILE_SIZE = 100
 MARGIN = 50

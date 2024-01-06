@@ -1,6 +1,6 @@
 # chess_pieces.py
-import pygame
 from constants import TILE_SIZE, MARGIN
+
 
 class ChessPiece:
     def __init__(self, image, position):
