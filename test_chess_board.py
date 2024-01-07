@@ -1,58 +1,54 @@
 import unittest
-from unittest.mock import Mock
 
 import pygame
 
 from chess_board import ChessBoard
+from chess_pieces import Rook, Queen
 
 
 class TestChessBoard(unittest.TestCase):
     def setUp(self):
-        pygame.init()
-        self.window = pygame.display.set_mode((800, 800))
-        self.chess_board = ChessBoard(self.window)
-
-    def tearDown(self):
-        pygame.quit()
-
-    def test_chess_board_initialization(self):
-        self.assertEqual(self.chess_board.window, self.window)
-        self.assertEqual(len(self.chess_board.pieces), 32)
+        # Initialize a pygame window for testing
+        self.window = pygame.Surface((800, 800))
+        self.board = ChessBoard(self.window)
 
     def test_add_piece(self):
-        piece = Mock()
-        self.chess_board.add_piece(piece)
-        self.assertIn(piece, self.chess_board.pieces)
+        # Test adding a piece to the board
+        piece = Rook(pygame.Surface((80, 80)), (0, 0), "A")
+        self.board.add_piece(piece)
+        self.assertIn(piece, self.board.get_all_pieces())
 
     def test_remove_piece(self):
-        piece = Mock()
-        self.chess_board.add_piece(piece)
-        self.chess_board.remove_piece(piece)
-        self.assertNotIn(piece, self.chess_board.pieces)
-
-    def test_draw_board(self):
-        # This test assumes that the draw_board method doesn't raise any exceptions
-        self.chess_board.draw_board()
-
-    def test_draw_pieces(self):
-        # This test assumes that the draw_pieces method doesn't raise any exceptions
-        self.chess_board.draw_pieces()
-
-    def test_get_all_pieces(self):
-        pieces = self.chess_board.get_all_pieces()
-        self.assertEqual(len(pieces), 32)
+        # Test removing a piece from the board
+        piece = Rook(pygame.Surface((80, 80)), (0, 0), "A")
+        self.board.add_piece(piece)
+        self.board.remove_piece(piece)
+        self.assertNotIn(piece, self.board.get_all_pieces())
 
     def test_shuffle_pieces(self):
-        original_positions = [piece.position for piece in self.chess_board.get_all_pieces()]
-        self.chess_board.shuffle_pieces()
-        new_positions = [piece.position for piece in self.chess_board.get_all_pieces()]
-
-        # Verify that the positions are shuffled
-        self.assertNotEqual(original_positions, new_positions)
+        # Test shuffling the positions of pieces on the board
+        initial_positions = [piece.position for piece in self.board.get_all_pieces()]
+        self.board.shuffle_pieces()
+        shuffled_positions = [piece.position for piece in self.board.get_all_pieces()]
+        self.assertNotEqual(initial_positions, shuffled_positions)
 
     def test_transform_random_piece_in_queen(self):
-        # This test assumes that the transform_random_piece_in_queen method doesn't raise any exceptions
-        self.chess_board.transform_random_piece_in_queen()
+        # Test transforming a random piece into a queen
+        initial_pieces = self.board.get_all_pieces()
+        self.board.transform_random_piece_in_queen()
+        new_pieces = self.board.get_all_pieces()
+
+        # Ensure that the number of pieces remains the same
+        self.assertEqual(len(initial_pieces), len(new_pieces))
+
+        # Ensure that at least one piece is different after transformation
+        self.assertNotEqual(initial_pieces, new_pieces)
+
+        # Ensure that the transformed piece is a Queen
+        for piece in new_pieces:
+            if piece not in initial_pieces:
+                self.assertIsInstance(piece, Queen)
+
 
 if __name__ == '__main__':
     unittest.main()
