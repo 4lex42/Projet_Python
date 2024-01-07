@@ -11,11 +11,19 @@ from constants import WHITE, WIDTH, HEIGHT, TILE_SIZE, MARGIN, SIDEBAR_WIDTH, GR
 
 class ChessGame:
     def __init__(self):
+        """
+                PRE : Aucun
+                POST : Initialise un objet ChessGame avec une fenêtre, un ChessBoard et définit le joueur actuel sur "A".
+        """
         self.window = pygame.display.set_mode((WIDTH + SIDEBAR_WIDTH, HEIGHT))
         self.board = ChessBoard(self.window)
         self.current_player = "A"
 
     def draw_game(self):
+        """
+                PRE : Aucun
+                POST : Dessine le jeu d'échecs sur la fenêtre, y compris le plateau, les pièces et la barre latérale.
+        """
         # Clear the window
         self.window.fill(WHITE)
 
@@ -32,6 +40,10 @@ class ChessGame:
         pygame.display.flip()
 
     def draw_sidebar(self):
+        """
+                PRE: Aucun
+                POST : Dessine la barre latérale sur la fenêtre, affichant les noms des joueurs en fonction du tour actuel.
+         """
         # Draw the sidebar
         pygame.draw.rect(self.window, (100, 100, 100), (WIDTH, 0, SIDEBAR_WIDTH, HEIGHT))
 
@@ -52,6 +64,10 @@ class ChessGame:
         self.current_player = "B" if self.current_player == "A" else "A"
 
     def run(self):
+        """
+                PRE : Aucun
+                POST : Exécute la boucle du jeu d'échecs, permettant aux joueurs de faire des mouvements soit avec la souris, soit avec l'interface CLI.
+        """
         # Dessiner le jeu des le lancement
         self.draw_game()
 
