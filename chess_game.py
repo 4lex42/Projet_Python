@@ -11,6 +11,11 @@ class ChessGame:
     def __init__(self):
         self.window = pygame.display.set_mode((WIDTH, HEIGHT))
         self.board = ChessBoard(self.window)
+        self.current_player = "A"
+
+    def switch_player_turn(self):
+        # Switch the current player's turn
+        self.current_player = "B" if self.current_player == "A" else "A"
 
     def run(self):
         # Dessiner l'echiquier des le lancement
@@ -34,7 +39,8 @@ class ChessGame:
                     elif event.type == pygame.MOUSEBUTTONDOWN:
                         x, y = pygame.mouse.get_pos()
                         for piece in self.board.pieces:
-                            if piece.click_inside_piece(x, y):
+                            if piece.color == self.current_player and piece.click_inside_piece(x, y):
+                                # Only allow pieces of the current player to be selected
                                 pion_selectionne = piece
                                 break
                     elif event.type == pygame.MOUSEBUTTONUP:
@@ -45,14 +51,16 @@ class ChessGame:
                             nouvelle_position = (y // TILE_SIZE, x // TILE_SIZE)
 
                             # Move the piece if the move is valid
-                            pion_selectionne.move(nouvelle_position, self.board)
+                            if pion_selectionne.move(nouvelle_position, self.board):
+                                # Switch the player turn after the move
+                                self.switch_player_turn()
 
                             # Update the display after moving the piece
                             self.board.update_board()
 
                             pion_selectionne = None
 
-        elif jouabilite == "2":   # CLI
+        elif jouabilite == "2":  # CLI
             while en_cours:
                 # Demande à l'utilisateur de fournir la position de la pièce à déplacer
                 user_input = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")

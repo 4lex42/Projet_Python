@@ -28,14 +28,17 @@ class ChessPiece:
         if not target_piece:
             # The destination square is empty
             self.position = new_position
+            return True
         elif target_piece.color == self.color:
             # The destination square is occupied by a piece of the same color
             print("Destination square is occupied by a piece of the same color.")
+            return False
         else:
             # The destination square is occupied by an opponent's piece
             print(f"Removing opponent's piece: {target_piece.position}, {target_piece.color}")
             board.remove_piece(target_piece)
             self.position = new_position
+            return True
 
 
 class Pawn(ChessPiece):
@@ -58,10 +61,14 @@ class Pawn(ChessPiece):
                         self.color == "B" and start_row == 6 and row == start_row - 2 and col == start_col and self.initial_double_move_allowed
                 )
         ):
-            super().move(new_position, board)
-            self.initial_double_move_allowed = False  # Update the flag after the initial double move
+            if super().move(new_position, board):
+                self.initial_double_move_allowed = False  # Update the flag after the initial double move
+                return True
+            else:
+                return False
         else:
             print("Invalid pawn move")
+            return False
 
 
 class Rook(ChessPiece):
