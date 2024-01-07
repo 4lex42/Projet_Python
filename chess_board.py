@@ -9,11 +9,19 @@ from constants import WHITE, PINK, TILE_SIZE, MARGIN
 
 class ChessBoard:
     def __init__(self, window):
+        """
+        PRE : window est une fenêtre pygame.
+        POST : Initialise un objet ChessBoard avec une liste vide de pièces et la fenêtre fournie.
+        """
         self.window = window
         self.pieces = []
         self.create_pieces()
 
     def create_pieces(self):
+        """
+        PRE : Aucun
+        POST : Crée et place les pièces d'échecs sur le plateau, y compris les pions, les tours, les cavaliers, les fous, les rois et les reines.
+        """
         # Load images
         pion_image = pygame.image.load("assets/pion.png")
         pion_image = pygame.transform.scale(pion_image, (80, 80))
@@ -77,12 +85,20 @@ class ChessBoard:
         self.pieces.remove(piece)
 
     def draw_board(self):
+        """
+        PRE : Aucun
+        POST : Dessine le plateau d'échecs sur la fenêtre avec des cases de couleurs alternées.
+        """
         for i in range(8):
             for j in range(8):
                 color = WHITE if (i + j) % 2 == 0 else PINK
                 pygame.draw.rect(self.window, color, (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
     def draw_pieces(self):
+        """
+        PRE : Aucun
+        POST : Dessine toutes les pièces d'échecs à leurs positions respectives sur la fenêtre.
+        """
         for piece in self.pieces:
             x = piece.position[1] * TILE_SIZE + MARGIN - 50 + (TILE_SIZE - piece.image.get_width()) // 2
             y = piece.position[0] * TILE_SIZE + MARGIN - 50 + (TILE_SIZE - piece.image.get_height()) // 2
@@ -92,6 +108,10 @@ class ChessBoard:
         return self.pieces
 
     def shuffle_pieces(self):
+        """
+        PRE : Aucun
+        POST : Mélange les positions de chaque pièce sur le plateau de manière aléatoire.
+        """
         # Shuffle the positions of each piece on the board
         positions = [(i, j) for i in range(8) for j in range(8)]
         random.shuffle(positions)
@@ -100,6 +120,10 @@ class ChessBoard:
             piece.position = new_position
 
     def transform_random_piece_in_queen(self):
+        """
+        PRE : Aucun
+        POST : Transforme une pièce sélectionnée au hasard sur le plateau en une Reine.
+        """
         pieces = self.get_all_pieces()
         if pieces:
             random_piece = random.choice(pieces)
