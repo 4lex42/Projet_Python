@@ -3,6 +3,7 @@ import sys
 
 import pygame
 
+from catastrophe import Catastrophe
 from chess_board import ChessBoard
 from constants import WHITE, WIDTH, HEIGHT, TILE_SIZE, MARGIN, SIDEBAR_WIDTH, GREEN
 
@@ -12,6 +13,7 @@ class ChessGame:
         self.window = pygame.display.set_mode((WIDTH + SIDEBAR_WIDTH, HEIGHT))
         self.board = ChessBoard(self.window)
         self.current_player = "A"
+        self.catastrophe = Catastrophe(0.05)
 
     def draw_game(self):
         # Clear the window
@@ -83,11 +85,15 @@ class ChessGame:
                             if pion_selectionne.move(nouvelle_position, self.board):
                                 # Switch the player turn after the move
                                 self.switch_player_turn()
+                                # Check for catastrophe event
+                                if self.catastrophe.should_trigger():
+                                    self.board.shuffle_pieces()
 
                             # Update the display after moving the piece
                             self.draw_game()
 
                             pion_selectionne = None
+
 
         elif jouabilite == "2":  # CLI
             while en_cours:

@@ -1,4 +1,6 @@
 # chess_board.py
+import random
+
 import pygame
 
 from chess_pieces import Rook, Knight, Bishop, Queen, King, Pawn
@@ -90,3 +92,13 @@ class ChessBoard:
 
     def get_all_pieces(self):
         return self.pieces
+
+    def shuffle_pieces(self):
+        # Shuffle the positions of each piece on the board
+        positions = [(i, j) for i in range(8) for j in range(8)]
+        random.shuffle(positions)
+
+        for piece, new_position in zip(self.pieces, positions):
+            piece.position = new_position
+
+        print("SUFFLE THE PIECES")
