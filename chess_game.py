@@ -87,7 +87,7 @@ class ChessGame:
                                 self.switch_player_turn()
 
                                 # Check for catastrophe event
-                                if random.random() < 0.5:
+                                if random.random() < 0.05:
                                     # Trigger a random catastrophe event
                                     random_event = random.choice([Storm(), Transformation()])
                                     random_event.trigger(self.board)
