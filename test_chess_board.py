@@ -54,8 +54,5 @@ class TestChessBoard(unittest.TestCase):
         # This test assumes that the transform_random_piece_in_queen method doesn't raise any exceptions
         self.chess_board.transform_random_piece_in_queen()
 
-    # Add more test cases to cover different scenarios and behaviors
-
-
 if __name__ == '__main__':
     unittest.main()

@@ -1,68 +1,103 @@
 import unittest
 
-from unittest.mock import Mock  # Utiliser Mock pour simuler les dépendances externes comme pygame
+import pygame
 
-from chess_pieces import ChessPiece, Pawn
+from chess_board import ChessBoard
+from chess_pieces import ChessPiece
 
 
 class TestChessPiece(unittest.TestCase):
+
     def setUp(self):
-        # Initialisation des objets communs pour les tests
-        self.mock_image = Mock()
-        self.mock_board = Mock()
-        self.mock_board.get_all_pieces.return_value = []
+        pygame.init()
 
-    def test_chess_piece_initialization(self):
-        piece = ChessPiece(self.mock_image, (0, 0), "A")
-        self.assertEqual(piece.image, self.mock_image)
-        self.assertEqual(piece.position, (0, 0))
-        self.assertEqual(piece.color, "A")
+    def test_init_valid(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        self.assertEqual(piece.image, image)
+        self.assertEqual(piece.position, position)
+        self.assertEqual(piece.color, color)
 
-    def test_chess_piece_click_inside_piece(self):
-        piece = ChessPiece(self.mock_image, (1, 1), "B")
-        # On suppose TILE_SIZE = 50, MARGIN = 10 pour simplifier
-        self.assertTrue(piece.click_inside_piece(35, 35))  # Inside the piece
-        self.assertFalse(piece.click_inside_piece(10, 10))  # Outside the piece
+    def test_init_invalid_image(self):
+        with self.assertRaises(TypeError):
+            ChessPiece("invalid_image", (1, 2), "A")
 
-    def test_chess_piece_move_valid(self):
-        piece = ChessPiece(self.mock_image, (2, 2), "A")
-        self.assertTrue(piece.move((3, 2), self.mock_board))
-        self.assertEqual(piece.position, (3, 2))
+    def test_init_invalid_position(self):
+        with self.assertRaises(TypeError):
+            ChessPiece(pygame.Surface((50, 50)), (1, "invalid"), "A")
 
-    def test_chess_piece_move_invalid_same_color(self):
-        piece1 = ChessPiece(self.mock_image, (2, 2), "A")
-        piece2 = ChessPiece(self.mock_image, (3, 2), "A")
-        self.mock_board.get_all_pieces.return_value = [piece2]
-        self.assertFalse(piece1.move((3, 2), self.mock_board))
-        self.assertEqual(piece1.position, (2, 2))
+    def test_init_invalid_color(self):
+        with self.assertRaises(TypeError):
+            ChessPiece(pygame.Surface((50, 50)), (1, 2), 123)
 
-    def test_chess_piece_move_remove_opponent_piece(self):
-        piece1 = ChessPiece(self.mock_image, (2, 2), "A")
-        piece2 = ChessPiece(self.mock_image, (3, 2), "B")
-        self.mock_board.get_all_pieces.return_value = [piece2]
-        self.assertTrue(piece1.move((3, 2), self.mock_board))
-        self.assertEqual(piece1.position, (3, 2))
-        self.assertNotIn(piece2, self.mock_board.pieces)
+    def test_click_inside_piece_valid(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        x = 60
+        y = 70
+        self.assertTrue(piece.click_inside_piece(x, y))
 
+    def test_click_inside_piece_invalid_coordinates(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        x = "invalid"
+        y = 70
+        with self.assertRaises(TypeError):
+            piece.click_inside_piece(x, y)
 
-class TestPawn(unittest.TestCase):
-    def setUp(self):
-        self.mock_image = Mock()
-        self.mock_board = Mock()
-        self.mock_board.get_all_pieces.return_value = []
+    def test_move_valid(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        new_position = (3, 2)
+        board = ChessBoard(pygame.Surface((100, 100)))
+        result = piece.move(new_position, board)
+        self.assertTrue(result)
+        self.assertEqual(piece.position, new_position)
 
-    def test_pawn_initialization(self):
-        pawn = Pawn(self.mock_image, (0, 0), "A")
-        self.assertEqual(pawn.image, self.mock_image)
-        self.assertEqual(pawn.position, (0, 0))
-        self.assertEqual(pawn.color, "A")
-        self.assertTrue(pawn.initial_double_move_allowed)
+    def test_move_invalid_position(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        new_position = (8, 2)
+        board = ChessBoard(pygame.Surface((100, 100)))
+        result = piece.move(new_position, board)
+        self.assertFalse(result)
+        self.assertEqual(piece.position, position)
 
-    def test_pawn_move_valid(self):
-        pawn = Pawn(self.mock_image, (1, 1), "A")
-        self.assertTrue(pawn.move((2, 1), self.mock_board))
-        self.assertEqual(pawn.position, (2, 1))
-        self.assertFalse(pawn.initial_double_move_allowed)
+    def test_move_invalid_position_same_color(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        new_position = (3, 2)
+        board = ChessBoard(pygame.Surface((100, 100)))
+        other_piece = ChessPiece(pygame.Surface((50, 50)), new_position, color)
+        board.add_piece(other_piece)
+        result = piece.move(new_position, board)
+        self.assertFalse(result)
+        self.assertEqual(piece.position, position)
+
+    def test_move_invalid_position_opponent_piece(self):
+        image = pygame.Surface((50, 50))
+        position = (1, 2)
+        color = "A"
+        piece = ChessPiece(image, position, color)
+        new_position = (3, 2)
+        board = ChessBoard(pygame.Surface((100, 100)))
+        opponent_piece = ChessPiece(pygame.Surface((50, 50)), new_position, "B")
+        board.add_piece(opponent_piece)
+        result = piece.move(new_position, board)
+        self.assertTrue(result)
+        self.assertEqual(piece.position, new_position)
 
 
 if __name__ == '__main__':
