@@ -33,8 +33,6 @@ class ChessBoard:
         cavalier_image = pygame.image.load("assets/cavalier.png")
         cavalier_image = pygame.transform.scale(cavalier_image, (80, 80))
 
-        pieces_images = ["pion", "roi", "reine", "tour", "fou", "cavalier"]
-
         # creer des listes des positions et des listes des images pour les joueurs A et B
         pieces_positions_a = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)]
         pieces_positions_b = [(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7)]
@@ -101,4 +99,18 @@ class ChessBoard:
         for piece, new_position in zip(self.pieces, positions):
             piece.position = new_position
 
-        print("SUFFLE THE PIECES")
+    def transform_random_piece_in_queen(self):
+        pieces = self.get_all_pieces()
+        if pieces:
+            random_piece = random.choice(pieces)
+            index = self.pieces.index(random_piece)
+
+            reine_image = pygame.image.load("assets/reine.png")
+            reine_image = pygame.transform.scale(reine_image, (80, 80))
+
+            if random_piece.color == "A":
+                new_queen = Queen(pygame.transform.rotate(reine_image, 180), random_piece.position, random_piece.color)
+            else:
+                new_queen = Queen(reine_image, random_piece.position, random_piece.color)
+
+            self.pieces[index] = new_queen
