@@ -14,50 +14,63 @@ class ChessGame:
         """
         PRE : Aucun
         POST : Initialise un objet ChessGame avec une fenêtre, un ChessBoard et définit le joueur actuel sur "A".
+        RAISE : RuntimeError, Erreur lors de l'initialisation de Pygame.
         """
-        self.window = pygame.display.set_mode((WIDTH + SIDEBAR_WIDTH, HEIGHT))
-        self.board = ChessBoard(self.window)
-        self.current_player = "A"
+        try:
+            pygame.init()
+            self.window = pygame.display.set_mode((WIDTH + SIDEBAR_WIDTH, HEIGHT))
+            self.board = ChessBoard(self.window)
+            self.current_player = "A"
+        except pygame.error as e:
+            raise RuntimeError(f"Erreur lors de l'initialisation de Pygame : {e}")
 
     def draw_game(self):
         """
         PRE : Aucun
         POST : Dessine le jeu d'échecs sur la fenêtre, y compris le plateau, les pièces et la barre latérale.
+        RAISE : RuntimeError, Erreur lors du dessin du jeu.
         """
-        # Clear the window
-        self.window.fill(WHITE)
+        try:
+            # Clear the window
+            self.window.fill(WHITE)
 
-        # Draw the board
-        self.board.draw_board()
+            # Draw the board
+            self.board.draw_board()
 
-        # Draw the pieces
-        self.board.draw_pieces()
+            # Draw the pieces
+            self.board.draw_pieces()
 
-        # Draw the sidebar
-        self.draw_sidebar()
+            # Draw the sidebar
+            self.draw_sidebar()
 
-        # Update the display
-        pygame.display.flip()
+            # Update the display
+            pygame.display.flip()
+        except pygame.error as e:
+            raise RuntimeError(f"Erreur lors du dessin du jeu : {e}")
 
     def draw_sidebar(self):
         """
         PRE: Aucun
         POST : Dessine la barre latérale sur la fenêtre, affichant les noms des joueurs en fonction du tour actuel.
+        RAISE : RuntimeError, Erreur lors du dessin de la barre latérale.
         """
-        # Draw the sidebar
-        pygame.draw.rect(self.window, (100, 100, 100), (WIDTH, 0, SIDEBAR_WIDTH, HEIGHT))
+        try:
+            # Draw the sidebar
+            pygame.draw.rect(self.window, (100, 100, 100), (WIDTH, 0, SIDEBAR_WIDTH, HEIGHT))
 
-        # Display player A's name with color based on turn
-        player_a_color = GREEN if self.current_player == "A" else WHITE
-        font_a = pygame.font.Font(None, 36)
-        text_a = font_a.render("Player A", True, player_a_color)
-        self.window.blit(text_a, ((WIDTH + 10), 90))
+            # Display player A's name with color based on turn
+            player_a_color = GREEN if self.current_player == "A" else WHITE
+            font_a = pygame.font.Font(None, 36)
+            text_a = font_a.render("Player A", True, player_a_color)
+            self.window.blit(text_a, ((WIDTH + 10), 90))
 
-        # Display player B's name with color based on turn
-        player_b_color = GREEN if self.current_player == "B" else WHITE
-        font_b = pygame.font.Font(None, 36)
-        text_b = font_b.render("Player B", True, player_b_color)
-        self.window.blit(text_b, ((WIDTH + 10), 690))
+            # Display player B's name with color based on turn
+            player_b_color = GREEN if self.current_player == "B" else WHITE
+            font_b = pygame.font.Font(None, 36)
+            text_b = font_b.render("Player B", True, player_b_color)
+            self.window.blit(text_b, ((WIDTH + 10), 690))
+        except pygame.error as e:
+            raise RuntimeError(f"Erreur lors du dessin de la barre latérale : {e}")
 
     def switch_player_turn(self):
         # Switch the current player's turn
@@ -67,110 +80,122 @@ class ChessGame:
         """
         PRE : Aucun
         POST : Exécute la boucle du jeu d'échecs, permettant aux joueurs de faire des mouvements soit avec la souris, soit avec l'interface CLI.
+        RAISE : RuntimeError, Erreur lors de l'exécution de la boucle du jeu d'échecs.
         """
-        # Dessiner le jeu des le lancement
-        self.draw_game()
+        try:
+            # Dessiner le jeu dès le lancement
+            self.draw_game()
 
-        en_cours = True
-        pion_selectionne = None  # stocker la piece selectionnee
+            en_cours = True
+            pion_selectionne = None  # Stocker la pièce sélectionnée
 
-        jouabilite = 0
-        while jouabilite != "2" and jouabilite != "1":
-            jouabilite = input("Choisissez votre mode de jouabilité, tapez le numéro 1 (Souris) ou 2 (Terminal) :")
+            jouabilite = 0
+            while jouabilite != "2" and jouabilite != "1":
+                jouabilite = input("Choisissez votre mode de jouabilité, tapez le numéro 1 (Souris) ou 2 (Terminal) : ")
 
-        if jouabilite == "1":  # souris
-            while en_cours:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        en_cours = False
-                    elif event.type == pygame.MOUSEBUTTONDOWN:
-                        x, y = pygame.mouse.get_pos()
-                        for piece in self.board.pieces:
-                            if piece.color == self.current_player and piece.click_inside_piece(x, y):
-                                # Only allow pieces of the current player to be selected
-                                pion_selectionne = piece
-                                break
-                    elif event.type == pygame.MOUSEBUTTONUP:
-                        if pion_selectionne:
+            if jouabilite == "1":  # Souris
+                while en_cours:
+                    for event in pygame.event.get():
+                        if event.type == pygame.QUIT:
+                            en_cours = False
+                        elif event.type == pygame.MOUSEBUTTONDOWN:
                             x, y = pygame.mouse.get_pos()
-                            x -= MARGIN - 50
-                            y -= MARGIN - 50
-                            nouvelle_position = (y // TILE_SIZE, x // TILE_SIZE)
+                            for piece in self.board.pieces:
+                                try:
+                                    if piece.color == self.current_player and piece.click_inside_piece(x, y):
+                                        # Autoriser uniquement les pièces du joueur actuel à être sélectionnées
+                                        pion_selectionne = piece
+                                        break
+                                except Exception as e:
+                                    raise RuntimeError(f"Erreur lors de la sélection de la pièce : {e}")
 
-                            # Move the piece if the move is valid
-                            if pion_selectionne.move(nouvelle_position, self.board):
-                                # Switch the player turn after the move
-                                self.switch_player_turn()
+                        elif event.type == pygame.MOUSEBUTTONUP:
+                            if pion_selectionne:
+                                x, y = pygame.mouse.get_pos()
+                                x -= MARGIN - 50
+                                y -= MARGIN - 50
+                                nouvelle_position = (y // TILE_SIZE, x // TILE_SIZE)
 
-                                # Check for catastrophe event
-                                if random.random() < 0.05:
-                                    # Trigger a random catastrophe event
-                                    random_event = random.choice([Storm(), Transformation()])
-                                    random_event.trigger(self.board)
+                                try:
+                                    # Déplacer la pièce si le déplacement est valide
+                                    if pion_selectionne.move(nouvelle_position, self.board):
+                                        # Changer le tour du joueur après le déplacement
+                                        self.switch_player_turn()
 
-                            # Update the display after moving the piece
-                            self.draw_game()
+                                        # Vérifier s'il y a un événement de catastrophe
+                                        if random.random() < 0.05:
+                                            # Déclencher un événement de catastrophe aléatoire
+                                            random_event = random.choice([Storm(), Transformation()])
+                                            random_event.trigger(self.board)
 
-                            pion_selectionne = None
+                                    # Mettre à jour l'affichage après le déplacement de la pièce
+                                    self.draw_game()
 
-        elif jouabilite == "2":  # CLI
-            while en_cours:
-                # Demande à l'utilisateur de fournir la position de la pièce à déplacer
-                user_input = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")
+                                    pion_selectionne = None
+                                except Exception as e:
+                                    raise RuntimeError(f"Erreur lors du déplacement de la pièce : {e}")
 
-                # Convertit la saisie de l'utilisateur en une paire de coordonnées (ligne, colonne)
-                coordonnees = user_input.split()  # Sépare la saisie en une liste de valeurs
-                ligne = int(coordonnees[0])  # Prend la première valeur comme numéro de ligne
-                colonne = int(coordonnees[1])  # Prend la deuxième valeur comme numéro de colonne
-                position = (ligne, colonne)  # Crée un tuple avec les coordonnées (ligne, colonne)
+            elif jouabilite == "2":  # CLI
+                while en_cours:
+                    saisie_utilisateur = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")
 
-                # Recherche de la pièce à la position spécifiée dans la liste des pièces sur l'échiquier
-                selected_piece = None
-                for piece in self.board.pieces:
-                    if piece.position == position:  # Vérifie si la position de la pièce correspond à la saisie de l'utilisateur
-                        selected_piece = piece  # Si la pièce est trouvée, elle est assignée à selected_piece
-                        break  # Arrête la recherche dès qu'une pièce est trouvée
+                    try:
+                        coordonnees = saisie_utilisateur.split()  # Séparer la saisie en une liste de valeurs
+                        ligne = int(coordonnees[0])  # Prendre la première valeur comme numéro de ligne
+                        colonne = int(coordonnees[1])  # Prendre la deuxième valeur comme numéro de colonne
+                        position = (ligne, colonne)  # Créer un tuple avec les coordonnées (ligne, colonne)
+                    except (ValueError, IndexError):
+                        print("Format de saisie incorrect. Utilisez le format 'ligne colonne'.")
+                        continue
 
-                if selected_piece:  # Vérifie si une pièce a été trouvée à la position spécifiée
-                    # Demande à l'utilisateur de fournir la nouvelle position pour déplacer la pièce
-                    new_position_input = input("Entrez la nouvelle position (ligne colonne) : ")
+                    pion_selectionne = None
+                    for piece in self.board.pieces:
+                        try:
+                            if piece.position == position:  # Vérifier si la position de la pièce correspond à la saisie de l'utilisateur
+                                pion_selectionne = piece  # Si la pièce est trouvée, elle est assignée à pion_selectionne
+                                break  # Arrêter la recherche dès qu'une pièce est trouvée
+                        except Exception as e:
+                            raise RuntimeError(f"Erreur lors de la recherche de la pièce : {e}")
 
-                    # Converti la nouvelle saisie de l'utilisateur en une paire de coordonnées (ligne, colonne)
-                    new_coordonnees = new_position_input.split()  # Sépare la nouvelle saisie en une liste de valeurs
-                    new_ligne = int(new_coordonnees[0])  # Prend la première valeur comme nouveau numéro de ligne
-                    new_colonne = int(new_coordonnees[1])  # Prend la deuxième valeur comme nouveau numéro de colonne
-                    new_position = (
-                        new_ligne, new_colonne)  # Crée un tuple avec les nouvelles coordonnées (ligne, colonne)
+                    if pion_selectionne:
+                        nouvelle_position_input = input("Entrez la nouvelle position (ligne colonne) : ")
 
-                    if selected_piece:
-                        for piece in self.board.pieces:
-                            if piece.position == new_position:
-                                self.board.pieces.remove(piece)
-                                break
+                        try:
+                            nouvelles_coordonnees = nouvelle_position_input.split()  # Séparer la nouvelle saisie en une liste de valeurs
+                            nouvelle_ligne = int(
+                                nouvelles_coordonnees[0])  # Prendre la première valeur comme nouveau numéro de ligne
+                            nouvelle_colonne = int(
+                                nouvelles_coordonnees[1])  # Prendre la deuxième valeur comme nouveau numéro de colonne
+                            nouvelle_position = (
+                                nouvelle_ligne,
+                                nouvelle_colonne)  # Créer un tuple avec les nouvelles coordonnées (ligne, colonne)
+                        except (ValueError, IndexError):
+                            print("Format de saisie incorrect. Utilisez le format 'ligne colonne'.")
+                            continue
 
-                    # Met à jour la position de la pièce sélectionnée avec la nouvelle position fournie par l'utilisateur
-                    selected_piece.position = new_position
+                        if pion_selectionne:
+                            for piece in self.board.pieces:
+                                try:
+                                    if piece.position == nouvelle_position:
+                                        self.board.pieces.remove(piece)
+                                        break
+                                except Exception as e:
+                                    raise RuntimeError(f"Erreur lors de la suppression de la pièce : {e}")
 
-                # Effacer l'écran et rafraichissement
-                self.window.fill(WHITE)
-                self.board.draw_board()
-                self.board.draw_pieces()  # Appel pour dessiner les pièces
-                pygame.display.flip()
+                        try:
+                            pion_selectionne.position = nouvelle_position
+                        except Exception as e:
+                            raise RuntimeError(f"Erreur lors de la mise à jour de la position de la pièce : {e}")
 
-            """command = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")
-            position = tuple(map(int, command.split()))  # Convertit la saisie en coordonnées (ligne, colonne)
+                    try:
+                        self.window.fill(WHITE)
+                        self.board.draw_board()
+                        self.board.draw_pieces()  # Appel pour dessiner les pièces
+                        pygame.display.flip()
+                    except Exception as e:
+                        raise RuntimeError(f"Erreur lors de l'effacement de l'écran et du rafraîchissement : {e}")
 
-            # Recherche de la pièce à la position spécifiée
-            selected_piece = None
-            for piece in self.board.pieces:
-                if piece.position == position:
-                    selected_piece = piece
-                    break
-
-            if selected_piece:
-                new_position = input("Entrez la nouvelle position (ligne colonne) : ")
-                new_position = tuple(map(int, new_position.split()))  # Nouvelle position de la pièce
-                selected_piece.position = new_position  # Met à jour la position de la pièce"""
-
-        pygame.quit()
-        sys.exit()
+                pygame.quit()
+                sys.exit()
+        except Exception as e:
+            raise RuntimeError(f"Erreur lors de l'exécution du jeu d'échecs : {e}")

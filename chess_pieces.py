@@ -1,4 +1,6 @@
 # chess_pieces.py
+import pygame
+
 from constants import TILE_SIZE, MARGIN
 
 
@@ -7,47 +9,83 @@ class ChessPiece:
         """
         PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
         POST : Initialise un objet ChessPiece avec l'image, la position et la couleur fournies.
+        RAISES :
+            TypeError: Si l'image n'est pas une instance de pygame.Surface.
+            TypeError: Si la position n'est pas un tuple de deux entiers.
+            TypeError: Si la couleur n'est pas une chaîne de caractères.
         """
-        self.image = image
-        self.position = position
-        self.color = color  # Add a color attribute
+        try:
+            if not isinstance(image, pygame.Surface):
+                raise TypeError("L'image doit être une instance de pygame.Surface.")
+            if not (isinstance(position, tuple) and len(position) == 2 and all(isinstance(i, int) for i in position)):
+                raise TypeError("La position doit être un tuple de deux entiers.")
+            if not isinstance(color, str):
+                raise TypeError("La couleur doit être une chaîne de caractères.")
+
+            self.image = image
+            self.position = position
+            self.color = color  # Add a color attribute
+
+        except TypeError as e:
+            raise TypeError(f"Erreur lors de l'initialisation de ChessPiece : {e}")
 
     def click_inside_piece(self, x, y):
         """
         PRE : x et y sont des entiers représentant des coordonnées sur la fenêtre.
         POST : Retourne True si les coordonnées fournies sont à l'intérieur des limites de la pièce, sinon False.
+        RAISE :
+            TypeError: Si x ou y ne sont pas des entiers.
         """
-        x_piece = self.position[1] * TILE_SIZE + MARGIN - 50
-        y_piece = self.position[0] * TILE_SIZE + MARGIN - 50
-        return x_piece <= x <= x_piece + TILE_SIZE and y_piece <= y <= y_piece + TILE_SIZE
+        try:
+            if not (isinstance(x, int) and isinstance(y, int)):
+                raise TypeError("Les coordonnées doivent être des entiers.")
+
+            x_piece = self.position[1] * TILE_SIZE + MARGIN - 50
+            y_piece = self.position[0] * TILE_SIZE + MARGIN - 50
+            return x_piece <= x <= x_piece + TILE_SIZE and y_piece <= y <= y_piece + TILE_SIZE
+
+        except TypeError as e:
+            raise TypeError(f"Erreur lors de l'exécution de click_inside_piece : {e}")
 
     def move(self, new_position, board):
         """
         PRE : new_position est un tuple de deux entiers représentant la position cible sur le plateau, board est un objet ChessBoard.
         POST : Déplace la pièce vers la nouvelle position si le mouvement est valide, met à jour le plateau en conséquence, et retourne True.
                Si le mouvement est invalide, retourne False.
+        RAISES :
+            TypeError: Si new_position n'est pas un tuple de deux entiers.
+            RuntimeError: Si une erreur survient lors de la mise à jour de la position.
         """
-        target_piece = None
+        try:
+            if not (isinstance(new_position, tuple) and len(new_position) == 2 and all(isinstance(i, int) for i in new_position)):
+                raise TypeError("new_position doit être un tuple de deux entiers.")
 
-        for piece in board.get_all_pieces():
-            if piece.position == new_position:
-                target_piece = piece
-                break
+            target_piece = None
 
-        if not target_piece:
-            # The destination square is empty
-            self.position = new_position
-            return True
-        elif target_piece.color == self.color:
-            # The destination square is occupied by a piece of the same color
-            print("Destination square is occupied by a piece of the same color.")
-            return False
-        else:
-            # The destination square is occupied by an opponent's piece
-            print(f"Removing opponent's piece: {target_piece.position}, {target_piece.color}")
-            board.remove_piece(target_piece)
-            self.position = new_position
-            return True
+            for piece in board.get_all_pieces():
+                if piece.position == new_position:
+                    target_piece = piece
+                    break
+
+            if not target_piece:
+                # The destination square is empty
+                self.position = new_position
+                return True
+            elif target_piece.color == self.color:
+                # The destination square is occupied by a piece of the same color
+                print("Destination square is occupied by a piece of the same color.")
+                return False
+            else:
+                # The destination square is occupied by an opponent's piece
+                print(f"Removing opponent's piece: {target_piece.position}, {target_piece.color}")
+                board.remove_piece(target_piece)
+                self.position = new_position
+                return True
+
+        except TypeError as e:
+            raise TypeError(f"Erreur lors de l'exécution de move : {e}")
+        except Exception as e:
+            raise RuntimeError(f"Erreur lors de l'exécution de move : {e}")
 
 
 class Pawn(ChessPiece):
