@@ -4,20 +4,29 @@ from constants import TILE_SIZE, MARGIN
 
 class ChessPiece:
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet ChessPiece avec l'image, la position et la couleur fournies.
+        """
         self.image = image
         self.position = position
         self.color = color  # Add a color attribute
 
     def click_inside_piece(self, x, y):
+        """
+        PRE : x et y sont des entiers représentant des coordonnées sur la fenêtre.
+        POST : Retourne True si les coordonnées fournies sont à l'intérieur des limites de la pièce, sinon False.
+        """
         x_piece = self.position[1] * TILE_SIZE + MARGIN - 50
         y_piece = self.position[0] * TILE_SIZE + MARGIN - 50
         return x_piece <= x <= x_piece + TILE_SIZE and y_piece <= y <= y_piece + TILE_SIZE
 
-    # def is_destination_square_empty(self, new_position, board):
-    #     return not any(piece.position == new_position for piece in board.get_all_pieces() if
-    #                    piece.color == self.color)
-
     def move(self, new_position, board):
+        """
+        PRE : new_position est un tuple de deux entiers représentant la position cible sur le plateau, board est un objet ChessBoard.
+        POST : Déplace la pièce vers la nouvelle position si le mouvement est valide, met à jour le plateau en conséquence, et retourne True.
+               Si le mouvement est invalide, retourne False.
+        """
         target_piece = None
 
         for piece in board.get_all_pieces():
@@ -43,10 +52,20 @@ class ChessPiece:
 
 class Pawn(ChessPiece):
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet Pawn avec l'image, la position, la couleur et un indicateur initial_double_move_allowed.
+        """
         super().__init__(image, position, color)
         self.initial_double_move_allowed = True
 
     def move(self, new_position, board):
+        """
+        PRE: new_position est un tuple d'entiers (ligne, colonne) représentant la nouvelle position de la pièce.
+             board est une instance de ChessBoard représentant l'échiquier.
+        POST: La position de la pièce est mise à jour conformément aux règles de déplacement d'un pion.
+              Si le premier double mouvement est effectué, initial_double_move_allowed est mis à False.
+        """
         start_row, start_col = self.position
         row, col = new_position
 
@@ -73,9 +92,18 @@ class Pawn(ChessPiece):
 
 class Rook(ChessPiece):
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet Rook avec l'image, la position et la couleur fournies.
+        """
         super().__init__(image, position, color)
 
     def move(self, new_position, board):
+        """
+        PRE: new_position est un tuple d'entiers (ligne, colonne) représentant la nouvelle position de la pièce.
+             board est une instance de ChessBoard représentant l'échiquier.
+        POST: La position de la pièce est mise à jour conformément aux règles de déplacement de chaque type de pièce.
+        """
         start_row, start_col = self.position
         row, col = new_position
 
@@ -89,9 +117,18 @@ class Rook(ChessPiece):
 
 class Knight(ChessPiece):
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet Knight avec l'image, la position et la couleur fournies.
+        """
         super().__init__(image, position, color)
 
     def move(self, new_position, board):
+        """
+        PRE: new_position est un tuple d'entiers (ligne, colonne) représentant la nouvelle position de la pièce.
+             board est une instance de ChessBoard représentant l'échiquier.
+        POST: La position de la pièce est mise à jour conformément aux règles de déplacement de chaque type de pièce.
+        """
         start_row, start_col = self.position
         row, col = new_position
 
@@ -106,9 +143,18 @@ class Knight(ChessPiece):
 
 class Bishop(ChessPiece):
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet Bishop avec l'image, la position et la couleur fournies.
+        """
         super().__init__(image, position, color)
 
     def move(self, new_position, board):
+        """
+        PRE: new_position est un tuple d'entiers (ligne, colonne) représentant la nouvelle position de la pièce.
+             board est une instance de ChessBoard représentant l'échiquier.
+        POST: La position de la pièce est mise à jour conformément aux règles de déplacement de chaque type de pièce.
+        """
         start_row, start_col = self.position
         row, col = new_position
 
@@ -122,9 +168,18 @@ class Bishop(ChessPiece):
 
 class King(ChessPiece):
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet King avec l'image, la position et la couleur fournies.
+        """
         super().__init__(image, position, color)
 
     def move(self, new_position, board):
+        """
+        PRE: new_position est un tuple d'entiers (ligne, colonne) représentant la nouvelle position de la pièce.
+             board est une instance de ChessBoard représentant l'échiquier.
+        POST: La position de la pièce est mise à jour conformément aux règles de déplacement de chaque type de pièce.
+        """
         start_row, start_col = self.position
         row, col = new_position
 
@@ -138,9 +193,18 @@ class King(ChessPiece):
 
 class Queen(ChessPiece):
     def __init__(self, image, position, color):
+        """
+        PRE : image est une pygame.Surface, position est un tuple de deux entiers représentant (ligne, colonne), color est une chaîne de caractères.
+        POST : Initialise un objet Queen avec l'image, la position et la couleur fournies.
+        """
         super().__init__(image, position, color)
 
     def move(self, new_position, board):
+        """
+        PRE: new_position est un tuple d'entiers (ligne, colonne) représentant la nouvelle position de la pièce.
+             board est une instance de ChessBoard représentant l'échiquier.
+        POST: La position de la pièce est mise à jour conformément aux règles de déplacement de chaque type de pièce.
+        """
         start_row, start_col = self.position
         row, col = new_position
 

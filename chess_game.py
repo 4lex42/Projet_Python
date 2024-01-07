@@ -4,7 +4,7 @@ import sys
 
 import pygame
 
-from catastrophe import Catastrophe, Transformation, Storm
+from catastrophe import Transformation, Storm
 from chess_board import ChessBoard
 from constants import WHITE, WIDTH, HEIGHT, TILE_SIZE, MARGIN, SIDEBAR_WIDTH, GREEN
 
