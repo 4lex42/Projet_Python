@@ -15,8 +15,8 @@ class ChessGame:
     def run(self):
         # Dessiner l'echiquier des le lancement
         self.window.fill(WHITE)
-        self.board.dessiner_plateau()
-        self.board.dessiner_pions()  # Appel pour dessiner les pièces
+        self.board.draw_board()
+        self.board.draw_pieces()  # Appel pour dessiner les pièces
         pygame.display.flip()
 
         en_cours = True
@@ -47,13 +47,10 @@ class ChessGame:
                             # Move the piece if the move is valid
                             pion_selectionne.move(nouvelle_position, self.board)
 
-                            pion_selectionne = None
+                            # Update the display after moving the piece
+                            self.board.update_board()
 
-                # Effacer l'écran
-                self.window.fill(WHITE)
-                self.board.dessiner_plateau()
-                self.board.dessiner_pions()  # Appel pour dessiner les pièces
-                pygame.display.flip()
+                            pion_selectionne = None
 
         elif jouabilite == "2":   # CLI
             while en_cours:
@@ -95,8 +92,8 @@ class ChessGame:
 
                 # Effacer l'écran et rafraichissement
                 self.window.fill(WHITE)
-                self.board.dessiner_plateau()
-                self.board.dessiner_pions()  # Appel pour dessiner les pièces
+                self.board.draw_board()
+                self.board.draw_pieces()  # Appel pour dessiner les pièces
                 pygame.display.flip()
 
             """command = input("Entrez la position de la pièce à déplacer (ligne colonne) : ")

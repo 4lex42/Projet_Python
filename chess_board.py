@@ -9,9 +9,9 @@ class ChessBoard:
     def __init__(self, window):
         self.window = window
         self.pieces = []
-        self.creer_pieces()
+        self.create_pieces()
 
-    def creer_pieces(self):
+    def create_pieces(self):
         # Load images
         pion_image = pygame.image.load("assets/pion.png")
         pion_image = pygame.transform.scale(pion_image, (80, 80))
@@ -50,29 +50,38 @@ class ChessBoard:
 
         # Placer les 8 pieces des joueurs A et B
         for piece_a in pieces_a:
-            self.ajouter_pion(piece_a)
+            self.add_piece(piece_a)
 
         for piece_b in pieces_b:
-            self.ajouter_pion(piece_b)
+            self.add_piece(piece_b)
 
         # Placer les pions des joueurs A et B
         for i in range(8):
             pion_a = Pawn(pion_image, (1, i), "A")
-            self.ajouter_pion(pion_a)
+            self.add_piece(pion_a)
 
             pion_b = Pawn(pion_image, (6, i), "B")
-            self.ajouter_pion(pion_b)
+            self.add_piece(pion_b)
 
-    def ajouter_pion(self, piece):
+    def add_piece(self, piece):
         self.pieces.append(piece)
 
-    def dessiner_plateau(self):
+    def remove_piece(self, piece):
+        self.pieces.remove(piece)
+
+    def draw_board(self):
         for i in range(8):
             for j in range(8):
                 couleur = WHITE if (i + j) % 2 == 0 else PINK
                 pygame.draw.rect(self.window, couleur, (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
-    def dessiner_pions(self):
+    def update_board(self):
+        self.window.fill(WHITE)  # Effacer l'écran
+        self.draw_board()
+        self.draw_pieces()  # Appel pour dessiner les pièces
+        pygame.display.flip()
+
+    def draw_pieces(self):
         for piece in self.pieces:
             x = piece.position[1] * TILE_SIZE + MARGIN - 50 + (TILE_SIZE - piece.image.get_width()) // 2
             y = piece.position[0] * TILE_SIZE + MARGIN - 50 + (TILE_SIZE - piece.image.get_height()) // 2
