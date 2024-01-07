@@ -1,7 +1,7 @@
 # chess_board.py
 import pygame
 
-from chess_pieces import ChessPiece, Rook, Knight, Bishop, Queen, King, Pawn
+from chess_pieces import Rook, Knight, Bishop, Queen, King, Pawn
 from constants import WHITE, PINK, TILE_SIZE, MARGIN
 
 
@@ -31,21 +31,28 @@ class ChessBoard:
         cavalier_image = pygame.image.load("assets/cavalier.png")
         cavalier_image = pygame.transform.scale(cavalier_image, (80, 80))
 
+        pieces_images = ["pion", "roi", "reine", "tour", "fou", "cavalier"]
+
         # creer des listes des positions et des listes des images pour les joueurs A et B
         pieces_positions_a = [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4), (0, 5), (0, 6), (0, 7)]
         pieces_positions_b = [(7, 0), (7, 1), (7, 2), (7, 3), (7, 4), (7, 5), (7, 6), (7, 7)]
 
-        def get_special_pieces_list(positions, color):
-            return [Rook(tour_image, positions[0], color),
-                    Knight(cavalier_image, positions[1], color),
-                    Bishop(fou_image, positions[2], color),
-                    Queen(reine_image, positions[3], color),
-                    King(roi_image, positions[4], color),
-                    Bishop(fou_image, positions[5], color),
-                    Knight(cavalier_image, positions[6], color),
-                    Rook(tour_image, positions[7], color)]
+        def get_special_pieces_list(positions, color, rotate=False):
+            def get_image(image):
+                if rotate:
+                    image = pygame.transform.rotate(image, 180)
+                return image
 
-        pieces_a = get_special_pieces_list(pieces_positions_a, "A")
+            return [Rook(get_image(tour_image), positions[0], color),
+                    Knight(get_image(cavalier_image), positions[1], color),
+                    Bishop(get_image(fou_image), positions[2], color),
+                    Queen(get_image(reine_image), positions[3], color),
+                    King(get_image(roi_image), positions[4], color),
+                    Bishop(get_image(fou_image), positions[5], color),
+                    Knight(get_image(cavalier_image), positions[6], color),
+                    Rook(get_image(tour_image), positions[7], color)]
+
+        pieces_a = get_special_pieces_list(pieces_positions_a, "A", True)
         pieces_b = get_special_pieces_list(pieces_positions_b, "B")
 
         # Placer les 8 pieces des joueurs A et B
@@ -57,7 +64,7 @@ class ChessBoard:
 
         # Placer les pions des joueurs A et B
         for i in range(8):
-            pion_a = Pawn(pion_image, (1, i), "A")
+            pion_a = Pawn(pygame.transform.rotate(pion_image, 180), (1, i), "A")
             self.add_piece(pion_a)
 
             pion_b = Pawn(pion_image, (6, i), "B")
@@ -72,14 +79,8 @@ class ChessBoard:
     def draw_board(self):
         for i in range(8):
             for j in range(8):
-                couleur = WHITE if (i + j) % 2 == 0 else PINK
-                pygame.draw.rect(self.window, couleur, (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE))
-
-    def update_board(self):
-        self.window.fill(WHITE)  # Effacer l'écran
-        self.draw_board()
-        self.draw_pieces()  # Appel pour dessiner les pièces
-        pygame.display.flip()
+                color = WHITE if (i + j) % 2 == 0 else PINK
+                pygame.draw.rect(self.window, color, (j * TILE_SIZE, i * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
     def draw_pieces(self):
         for piece in self.pieces:

@@ -80,11 +80,11 @@ class Rook(ChessPiece):
         row, col = new_position
 
         # Check if the move is allowed for a rook (horizontal or vertical movement)
-        if (row == start_row or col == start_col):
-            # Check if the destination square is empty
-            super().move(new_position, board)
+        if row == start_row or col == start_col:
+            return super().move(new_position, board)
         else:
             print("Invalid rook move")
+            return False
 
 
 class Knight(ChessPiece):
@@ -98,9 +98,10 @@ class Knight(ChessPiece):
         # Check if the move is allowed for a knight (L-shaped movement)
         if ((abs(row - start_row) == 2 and abs(col - start_col) == 1) or
                 (abs(row - start_row) == 1 and abs(col - start_col) == 2)):
-            super().move(new_position, board)
+            return super().move(new_position, board)
         else:
             print("Invalid knight move")
+            return False
 
 
 class Bishop(ChessPiece):
@@ -113,9 +114,10 @@ class Bishop(ChessPiece):
 
         # Check if the move is allowed for a bishop (diagonal movement)
         if abs(row - start_row) == abs(col - start_col):
-            super().move(new_position, board)
+            return super().move(new_position, board)
         else:
             print("Invalid bishop move")
+            return False
 
 
 class King(ChessPiece):
@@ -128,9 +130,10 @@ class King(ChessPiece):
 
         # Check if the move is allowed for a king (one square movement in any direction)
         if abs(row - start_row) <= 1 and abs(col - start_col) <= 1:
-            super().move(new_position, board)
+            return super().move(new_position, board)
         else:
             print("Invalid king move")
+            return False
 
 
 class Queen(ChessPiece):
@@ -144,6 +147,7 @@ class Queen(ChessPiece):
         # Check if the move is allowed for a queen (horizontal, vertical, or diagonal movement)
         if (row == start_row or col == start_col or
                 abs(row - start_row) == abs(col - start_col)):
-            super().move(new_position, board)
+            return super().move(new_position, board)
         else:
             print("Invalid queen move")
+            return False

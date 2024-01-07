@@ -4,25 +4,54 @@ import sys
 import pygame
 
 from chess_board import ChessBoard
-from constants import WHITE, WIDTH, HEIGHT, TILE_SIZE, MARGIN
+from constants import WHITE, WIDTH, HEIGHT, TILE_SIZE, MARGIN, SIDEBAR_WIDTH, GREEN
 
 
 class ChessGame:
     def __init__(self):
-        self.window = pygame.display.set_mode((WIDTH, HEIGHT))
+        self.window = pygame.display.set_mode((WIDTH + SIDEBAR_WIDTH, HEIGHT))
         self.board = ChessBoard(self.window)
         self.current_player = "A"
+
+    def draw_game(self):
+        # Clear the window
+        self.window.fill(WHITE)
+
+        # Draw the board
+        self.board.draw_board()
+
+        # Draw the pieces
+        self.board.draw_pieces()
+
+        # Draw the sidebar
+        self.draw_sidebar()
+
+        # Update the display
+        pygame.display.flip()
+
+    def draw_sidebar(self):
+        # Draw the sidebar
+        pygame.draw.rect(self.window, (100, 100, 100), (WIDTH, 0, SIDEBAR_WIDTH, HEIGHT))
+
+        # Display player A's name with color based on turn
+        player_a_color = GREEN if self.current_player == "A" else WHITE
+        font_a = pygame.font.Font(None, 36)
+        text_a = font_a.render("Player A", True, player_a_color)
+        self.window.blit(text_a, ((WIDTH + 10), 90))
+
+        # Display player B's name with color based on turn
+        player_b_color = GREEN if self.current_player == "B" else WHITE
+        font_b = pygame.font.Font(None, 36)
+        text_b = font_b.render("Player B", True, player_b_color)
+        self.window.blit(text_b, ((WIDTH + 10), 690))
 
     def switch_player_turn(self):
         # Switch the current player's turn
         self.current_player = "B" if self.current_player == "A" else "A"
 
     def run(self):
-        # Dessiner l'echiquier des le lancement
-        self.window.fill(WHITE)
-        self.board.draw_board()
-        self.board.draw_pieces()  # Appel pour dessiner les pièces
-        pygame.display.flip()
+        # Dessiner le jeu des le lancement
+        self.draw_game()
 
         en_cours = True
         pion_selectionne = None  # stocker la piece selectionnee
@@ -56,7 +85,7 @@ class ChessGame:
                                 self.switch_player_turn()
 
                             # Update the display after moving the piece
-                            self.board.update_board()
+                            self.draw_game()
 
                             pion_selectionne = None
 
