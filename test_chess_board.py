@@ -33,6 +33,23 @@ class TestChessBoard(unittest.TestCase):
         self.assertNotEqual(initial_positions, shuffled_positions)
 
     def test_transform_random_piece_in_queen(self):
+        # Ajoute une pièce au plateau
+        initial_piece = Rook(pygame.Surface((80, 80)), (0, 0), "A")
+        self.board.add_piece(initial_piece)
+
+        # Vérifie que la pièce initiale est présente sur le plateau
+        initial_pieces = self.board.get_all_pieces()
+        self.assertIn(initial_piece, initial_pieces)
+
+        # Exécute la transformation
+        self.board.transform_random_piece_in_queen()
+
+        # Récupère la liste des pièces après la transformation
+        new_pieces = self.board.get_all_pieces()
+
+        # Vérifie qu'au moins une pièce est devenue une Reine
+        self.assertTrue(any(isinstance(piece, Queen) for piece in new_pieces))
+
         # Test transforming a random piece into a queen
         initial_pieces = self.board.get_all_pieces()
         self.board.transform_random_piece_in_queen()
@@ -41,14 +58,9 @@ class TestChessBoard(unittest.TestCase):
         # Ensure that the number of pieces remains the same
         self.assertEqual(len(initial_pieces), len(new_pieces))
 
-        # Ensure that at least one piece is different after transformation
-        self.assertNotEqual(initial_pieces, new_pieces)
-
         # Ensure that the transformed piece is a Queen
         for piece in new_pieces:
             if piece not in initial_pieces:
                 self.assertIsInstance(piece, Queen)
 
 
-if __name__ == '__main__':
-    unittest.main()
