@@ -27,6 +27,15 @@ class TestChessGame(unittest.TestCase):
         self.assertEqual(mock_stdout.getvalue(), "")
 
     @patch('builtins.input', return_value='1')  # Mocking user input for testing
+    @patch('sys.stdout', new_callable=StringIO)  # Redirecting stdout for testing
+    def test_draw_sidebar(self, mock_stdout, mock_input):
+        game = ChessGame()
+        game.draw_sidebar()
+
+        # Check if any errors were printed to stdout during drawing the sidebar
+        self.assertEqual(mock_stdout.getvalue(), "")
+
+    @patch('builtins.input', return_value='1')  # Mocking user input for testing
     def test_switch_player_turn(self, mock_input):
         game = ChessGame()
         initial_player = game.current_player
@@ -37,6 +46,10 @@ class TestChessGame(unittest.TestCase):
         # Check if the player turn has switched
         self.assertNotEqual(initial_player, new_player)
 
+    @patch('builtins.input', side_effect=['1'])  # Mocking input to simulate user input
+    @patch('sys.stdout', new_callable=StringIO)  # Redirecting stdout for testing
+    def test_run_with_mouse_input(self, mock_stdout, mock_input):
+        game = ChessGame()
+        game.run()
 
-if __name__ == '__main__':
-    unittest.main()
+        self.assertEqual(mock_stdout.getvalue(), "")
