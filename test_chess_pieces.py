@@ -98,7 +98,3 @@ class TestChessPiece(unittest.TestCase):
         result = piece.move(new_position, board)
         self.assertTrue(result)
         self.assertEqual(piece.position, new_position)
-
-
-if __name__ == '__main__':
-    unittest.main()
