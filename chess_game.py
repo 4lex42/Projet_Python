@@ -4,6 +4,7 @@ import sys
 
 import pygame
 
+from Projet_Python import chess_board
 from catastrophe import Transformation, Storm
 from chess_board import ChessBoard
 from constants import WHITE, WIDTH, HEIGHT, TILE_SIZE, MARGIN, SIDEBAR_WIDTH, GREEN
@@ -76,6 +77,27 @@ class ChessGame:
         # Switch the current player's turn
         self.current_player = "B" if self.current_player == "A" else "A"
 
+    def display_winner(self, joueur):
+        pygame.quit()
+        pygame.init()
+
+        # Create a new smaller window
+        victory_screen = pygame.display.set_mode((400, 200))
+        pygame.display.set_caption("Victoire!")
+
+        font_winner = pygame.font.Font(None, 36)
+        text_winner = font_winner.render(f"Le joueur {joueur[0]} a gagné!", True, (0, 0, 0))
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            victory_screen.fill((255, 255, 255))
+            victory_screen.blit(text_winner, (50, 80))
+            pygame.display.flip()
+
     def run(self):
         """
         PRE : Aucun
@@ -132,6 +154,16 @@ class ChessGame:
                                     self.draw_game()
 
                                     pion_selectionne = None
+
+                                    # Vérification de l'existence du roi dans la liste
+                                    king_exists = [isinstance(objet, chess_board.King) for objet in
+                                                   self.board.get_all_pieces()]
+                                    nombre_de_rois = sum(king_exists)
+                                    if nombre_de_rois < 2:
+                                        colors_of_king = [objet.color for objet in self.board.get_all_pieces() if
+                                                           isinstance(objet, chess_board.King)]
+                                        self.display_winner(colors_of_king)
+
                                 except Exception as e:
                                     raise RuntimeError(f"Erreur lors du déplacement de la pièce : {e}")
 
